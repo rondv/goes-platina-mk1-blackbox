@@ -1,0 +1,10 @@
+*~
+*#*#
+*.ko
+*.orig
+*.rej
+*.so
+*.swp
+*.test
+/goes
+/goes-platina-mk1

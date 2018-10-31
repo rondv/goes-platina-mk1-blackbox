@@ -263,7 +263,7 @@ type birdOspfReconnectivity struct{ *docker.Docket }
 func (birdOspfReconnectivity) String() string { return "repeat-connectivity" }
 
 func (bird birdOspfReconnectivity) Test(t *testing.T) {
-	birdOspfConnectivity(t)
+	birdOspfConnectivity(bird).Test(t)
 }
 
 type birdOspfDaemon struct{ *docker.Docket }

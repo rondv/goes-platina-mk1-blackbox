@@ -63,28 +63,6 @@ func TestMain(m *testing.M) {
 	ecode = m.Run()
 }
 
-const (
-	gobgpNetTmpl     = "testdata/gobgp/ebgp/conf.yaml.tmpl"
-	gobgpVlanTmpl    = "testdata/gobgp/ebgp/vlan/conf.yaml.tmpl"
-	birdBgpNetTmpl   = "testdata/bird/bgp/conf.yaml.tmpl"
-	birdBgpVlanTmpl  = "testdata/bird/bgp/vlan/conf.yaml.tmpl"
-	birdOspfNetTmpl  = "testdata/bird/ospf/conf.yaml.tmpl"
-	birdOspfVlanTmpl = "testdata/bird/ospf/vlan/conf.yaml.tmpl"
-	frrBgpNetTmpl    = "testdata/frr/bgp/conf.yaml.tmpl"
-	frrBgpVlanTmpl   = "testdata/frr/bgp/vlan/conf.yaml.tmpl"
-	frrOspfNetTmpl   = "testdata/frr/ospf/conf.yaml.tmpl"
-	frrOspfVlanTmpl  = "testdata/frr/ospf/vlan/conf.yaml.tmpl"
-	frrIsisNetTmpl   = "testdata/frr/isis/conf.yaml.tmpl"
-	frrIsisVlanTmpl  = "testdata/frr/isis/vlan/conf.yaml.tmpl"
-)
-
-func tfn(id, proto string) string {
-	if id == "vlan" {
-		return "testdata/" + proto + "/vlan/conf.yaml.tmpl"
-	}
-	return "testdata/" + proto + "/conf.yaml.tmpl"
-}
-
 func Test(t *testing.T) {
 	for _, x := range []struct {
 		id      string
@@ -96,6 +74,9 @@ func Test(t *testing.T) {
 		t.Run(x.id, func(t *testing.T) {
 			t.Run("ping", func(t *testing.T) {
 				pingTest(t, x.netdevs)
+			})
+			t.Run("static", func(t *testing.T) {
+				staticTest(t, tfn(x.id, "net/static"))
 			})
 			t.Run("gobgp", func(t *testing.T) {
 				gobgpTest(t, tfn(x.id, "gobgp/ebgp"))
@@ -150,4 +131,11 @@ func loadXeth() {
 		xargs = append(xargs, "dyndbg=-pmf")
 	}
 	test.Run(xargs...)
+}
+
+func tfn(id, proto string) string {
+	if id == "vlan" {
+		return "testdata/" + proto + "/vlan/conf.yaml.tmpl"
+	}
+	return "testdata/" + proto + "/conf.yaml.tmpl"
 }

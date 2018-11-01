@@ -17,11 +17,6 @@ import (
 	"github.com/platinasystems/test/netport"
 )
 
-const (
-	AtVnetd = "@platina-mk1/vnetd"
-	AtXeth  = "@xeth"
-)
-
 func TestMain(m *testing.M) {
 	var ecode int
 	var redisd, vnetd test.Daemon
@@ -43,10 +38,18 @@ func TestMain(m *testing.M) {
 		panic("you aren't root")
 	}
 	if b, err := ioutil.ReadFile("/proc/net/unix"); err == nil {
-		if bytes.Index(b, []byte(AtVnetd)) >= 0 {
-			panic(fmt.Errorf("%s %s", AtVnetd, "in use"))
+		for _, atsock := range []string{
+			"@redisd",
+			"@redis.reg",
+			"@redis.pub",
+			"@vnet",
+			"@vnetd",
+		} {
+			if bytes.Index(b, []byte(atsock)) >= 0 {
+				panic(fmt.Errorf("%s %s", atsock, "in use"))
+			}
 		}
-		if bytes.Index(b, []byte(AtXeth)) >= 0 {
+		if bytes.Index(b, []byte("@xeth")) >= 0 {
 			test.Run("rmmod", "platina-mk1")
 		}
 	}

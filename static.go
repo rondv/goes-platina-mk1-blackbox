@@ -13,6 +13,14 @@ import (
 	"github.com/platinasystems/test/docker"
 )
 
+func staticNetTest(t *testing.T) {
+	staticTest(t, "testdata/net/static/conf.yaml.tmpl")
+}
+
+func staticVlanTest(t *testing.T) {
+	staticTest(t, "testdata/net/static/vlan/conf.yaml.tmpl")
+}
+
 func staticTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,

@@ -65,82 +65,24 @@ func TestMain(m *testing.M) {
 
 func Test(t *testing.T) {
 	t.Run("net", func(t *testing.T) {
-		t.Run("ping", func(t *testing.T) {
-			pingTest(t, netport.TwoNets)
-		})
-		t.Run("static", func(t *testing.T) {
-			staticTest(t, tfn("net/static"))
-		})
-		t.Run("gobgp", func(t *testing.T) {
-			gobgpTest(t, tfn("gobgp/ebgp"))
-		})
-		t.Run("bird", func(t *testing.T) {
-			t.Run("bgp", func(t *testing.T) {
-				birdBgpTest(t, tfn("bird/bgp"))
-			})
-			t.Run("ospf", func(t *testing.T) {
-				birdOspfTest(t, tfn("bird/ospf"))
-			})
-			if *test.DryRun {
-				t.SkipNow()
-			}
-		})
-		t.Run("frr", func(t *testing.T) {
-			t.Run("bgp", func(t *testing.T) {
-				frrBgpTest(t, tfn("frr/bgp"))
-			})
-			t.Run("ospf", func(t *testing.T) {
-				frrOspfTest(t, tfn("frr/ospf"))
-			})
-			t.Run("isis", func(t *testing.T) {
-				frrIsisTest(t, tfn("frr/isis"))
-			})
-			if *test.DryRun {
-				t.SkipNow()
-			}
-		})
+		t.Run("ping", pingNetTest)
+		// t.Run("dhcp", dhcpNetTest)
+		t.Run("static", staticNetTest)
+		t.Run("gobgp", gobgpNetTest)
+		t.Run("bird", birdNetTest)
+		t.Run("frr", frrNetTest)
 		if *test.DryRun {
 			t.SkipNow()
 		}
 	})
 	t.Run("vlan", func(t *testing.T) {
-		t.Run("ping", func(t *testing.T) {
-			pingTest(t, netport.TwoVlanNets)
-		})
-		t.Run("slice", func(t *testing.T) {
-			sliceTest(t, tfn("net/slice/vlan"))
-		})
-		t.Run("static", func(t *testing.T) {
-			staticTest(t, tfn("net/static/vlan"))
-		})
-		t.Run("gobgp", func(t *testing.T) {
-			gobgpTest(t, tfn("gobgp/ebgp/vlan"))
-		})
-		t.Run("bird", func(t *testing.T) {
-			t.Run("bgp", func(t *testing.T) {
-				birdBgpTest(t, tfn("bird/bgp/vlan"))
-			})
-			t.Run("ospf", func(t *testing.T) {
-				birdOspfTest(t, tfn("bird/ospf/vlan"))
-			})
-			if *test.DryRun {
-				t.SkipNow()
-			}
-		})
-		t.Run("frr", func(t *testing.T) {
-			t.Run("bgp", func(t *testing.T) {
-				frrBgpTest(t, tfn("frr/bgp/vlan"))
-			})
-			t.Run("ospf", func(t *testing.T) {
-				frrOspfTest(t, tfn("frr/ospf/vlan"))
-			})
-			t.Run("isis", func(t *testing.T) {
-				frrIsisTest(t, tfn("frr/isis/vlan"))
-			})
-			if *test.DryRun {
-				t.SkipNow()
-			}
-		})
+		t.Run("ping", pingVlanTest)
+		// t.Run("dhcp", dhcpVlanTest)
+		t.Run("slice", sliceVlanTest)
+		t.Run("static", staticVlanTest)
+		t.Run("gobgp", gobgpVlanTest)
+		t.Run("bird", birdVlanTest)
+		t.Run("frr", frrVlanTest)
 		if *test.DryRun {
 			t.SkipNow()
 		}
@@ -165,8 +107,4 @@ func loadXeth() {
 		xargs = append(xargs, "dyndbg=-pmf")
 	}
 	test.Run(xargs...)
-}
-
-func tfn(dir string) string {
-	return "testdata/" + dir + "/conf.yaml.tmpl"
 }

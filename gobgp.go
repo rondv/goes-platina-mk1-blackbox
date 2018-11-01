@@ -13,6 +13,14 @@ import (
 	"github.com/platinasystems/test/docker"
 )
 
+func gobgpNetTest(t *testing.T) {
+	gobgpTest(t, "testdata/gobgp/ebgp/conf.yaml.tmpl")
+}
+
+func gobgpVlanTest(t *testing.T) {
+	gobgpTest(t, "testdata/gobgp/ebgp/vlan/conf.yaml.tmpl")
+}
+
 func gobgpTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,

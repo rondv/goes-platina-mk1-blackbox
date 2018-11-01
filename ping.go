@@ -16,6 +16,14 @@ import (
 
 var Flood = flag.Int("test.flood", 1, "flood ping duration in seconds")
 
+func pingNetTest(t *testing.T) {
+	pingTest(t, netport.TwoNets)
+}
+
+func pingVlanTest(t *testing.T) {
+	pingTest(t, netport.TwoVlanNets)
+}
+
 func pingTest(t *testing.T, netdevs netport.NetDevs) {
 	netdevs.Test(t,
 		pingGateways(netdevs),

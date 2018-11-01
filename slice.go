@@ -13,6 +13,10 @@ import (
 	"github.com/platinasystems/test/docker"
 )
 
+func sliceVlanTest(t *testing.T) {
+	sliceTest(t, "testdata/net/slice/vlan/conf.yaml.tmpl")
+}
+
 func sliceTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,

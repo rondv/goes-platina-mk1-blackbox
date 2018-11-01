@@ -12,6 +12,30 @@ import (
 	"github.com/platinasystems/test/docker"
 )
 
+func birdNetTest(t *testing.T) {
+	t.Run("bgp", birdNetBgpTest)
+	t.Run("ospf", birdNetOspfTest)
+	if *test.DryRun {
+		t.SkipNow()
+	}
+}
+
+func birdVlanTest(t *testing.T) {
+	t.Run("bgp", birdVlanBgpTest)
+	t.Run("ospf", birdVlanOspfTest)
+	if *test.DryRun {
+		t.SkipNow()
+	}
+}
+
+func birdNetBgpTest(t *testing.T) {
+	birdBgpTest(t, "testdata/ /conf.yaml.tmpl")
+}
+
+func birdVlanBgpTest(t *testing.T) {
+	birdBgpTest(t, "testdata/bird/bgp/vlan/conf.yaml.tmpl")
+}
+
 func birdBgpTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,
@@ -23,6 +47,14 @@ func birdBgpTest(t *testing.T, tmpl string) {
 		birdBgpFlap{docket},
 		birdBgpConnectivity{docket},
 		birdBgpAdminDown{docket})
+}
+
+func birdNetOspfTest(t *testing.T) {
+	birdOspfTest(t, "testdata/bird/ospf/conf.yaml.tmpl")
+}
+
+func birdVlanOspfTest(t *testing.T) {
+	birdOspfTest(t, "testdata/bird/ospf/vlan/conf.yaml.tmpl")
 }
 
 func birdOspfTest(t *testing.T, tmpl string) {

@@ -12,6 +12,32 @@ import (
 	"github.com/platinasystems/test/docker"
 )
 
+func frrNetTest(t *testing.T) {
+	t.Run("bgp", frrNetBgpTest)
+	t.Run("ospf", frrNetOspfTest)
+	t.Run("isis", frrNetIsisTest)
+	if *test.DryRun {
+		t.SkipNow()
+	}
+}
+
+func frrVlanTest(t *testing.T) {
+	t.Run("bgp", frrVlanBgpTest)
+	t.Run("ospf", frrVlanOspfTest)
+	t.Run("isis", frrVlanIsisTest)
+	if *test.DryRun {
+		t.SkipNow()
+	}
+}
+
+func frrNetBgpTest(t *testing.T) {
+	frrBgpTest(t, "testdata/frr/bgp/conf.yaml.tmpl")
+}
+
+func frrVlanBgpTest(t *testing.T) {
+	frrBgpTest(t, "testdata/frr/bgp/vlan/conf.yaml.tmpl")
+}
+
 func frrBgpTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,
@@ -23,6 +49,14 @@ func frrBgpTest(t *testing.T, tmpl string) {
 		frrBgpFlap{docket},
 		frrBgpConnectivity{docket},
 		frrBgpAdminDown{docket})
+}
+
+func frrNetOspfTest(t *testing.T) {
+	frrOspfTest(t, "testdata/frr/ospf/conf.yaml.tmpl")
+}
+
+func frrVlanOspfTest(t *testing.T) {
+	frrOspfTest(t, "testdata/frr/ospf/vlan/conf.yaml.tmpl")
 }
 
 func frrOspfTest(t *testing.T, tmpl string) {
@@ -37,6 +71,14 @@ func frrOspfTest(t *testing.T, tmpl string) {
 		frrOspfFlap{docket},
 		frrOspfConnectivity{docket},
 		frrOspfAdminDown{docket})
+}
+
+func frrNetIsisTest(t *testing.T) {
+	frrIsisTest(t, "testdata/frr/isis/conf.yaml.tmpl")
+}
+
+func frrVlanIsisTest(t *testing.T) {
+	frrIsisTest(t, "testdata/frr/isis/vlan/conf.yaml.tmpl")
 }
 
 func frrIsisTest(t *testing.T, tmpl string) {

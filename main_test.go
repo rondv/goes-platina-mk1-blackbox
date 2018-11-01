@@ -66,7 +66,7 @@ func TestMain(m *testing.M) {
 func Test(t *testing.T) {
 	t.Run("net", func(t *testing.T) {
 		t.Run("ping", pingNetTest)
-		// t.Run("dhcp", dhcpNetTest)
+		t.Run("dhcp", dhcpNetTest)
 		t.Run("static", staticNetTest)
 		t.Run("gobgp", gobgpNetTest)
 		t.Run("bird", birdNetTest)
@@ -77,7 +77,7 @@ func Test(t *testing.T) {
 	})
 	t.Run("vlan", func(t *testing.T) {
 		t.Run("ping", pingVlanTest)
-		// t.Run("dhcp", dhcpVlanTest)
+		t.Run("dhcp", dhcpVlanTest)
 		t.Run("slice", sliceVlanTest)
 		t.Run("static", staticVlanTest)
 		t.Run("gobgp", gobgpVlanTest)

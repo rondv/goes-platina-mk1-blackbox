@@ -64,53 +64,87 @@ func TestMain(m *testing.M) {
 }
 
 func Test(t *testing.T) {
-	for _, x := range []struct {
-		id      string
-		netdevs netport.NetDevs
-	}{
-		{"net", netport.TwoNets},
-		{"vlan", netport.TwoVlanNets},
-	} {
-		t.Run(x.id, func(t *testing.T) {
-			t.Run("ping", func(t *testing.T) {
-				pingTest(t, x.netdevs)
+	t.Run("net", func(t *testing.T) {
+		t.Run("ping", func(t *testing.T) {
+			pingTest(t, netport.TwoNets)
+		})
+		t.Run("static", func(t *testing.T) {
+			staticTest(t, tfn("net/static"))
+		})
+		t.Run("gobgp", func(t *testing.T) {
+			gobgpTest(t, tfn("gobgp/ebgp"))
+		})
+		t.Run("bird", func(t *testing.T) {
+			t.Run("bgp", func(t *testing.T) {
+				birdBgpTest(t, tfn("bird/bgp"))
 			})
-			t.Run("static", func(t *testing.T) {
-				staticTest(t, tfn(x.id, "net/static"))
-			})
-			t.Run("gobgp", func(t *testing.T) {
-				gobgpTest(t, tfn(x.id, "gobgp/ebgp"))
-			})
-			t.Run("bird", func(t *testing.T) {
-				t.Run("bgp", func(t *testing.T) {
-					birdBgpTest(t, tfn(x.id, "bird/bgp"))
-				})
-				t.Run("ospf", func(t *testing.T) {
-					birdOspfTest(t, tfn(x.id, "bird/ospf"))
-				})
-				if *test.DryRun {
-					t.SkipNow()
-				}
-			})
-			t.Run("frr", func(t *testing.T) {
-				t.Run("bgp", func(t *testing.T) {
-					frrBgpTest(t, tfn(x.id, "frr/bgp"))
-				})
-				t.Run("ospf", func(t *testing.T) {
-					frrOspfTest(t, tfn(x.id, "frr/ospf"))
-				})
-				t.Run("isis", func(t *testing.T) {
-					frrIsisTest(t, tfn(x.id, "frr/isis"))
-				})
-				if *test.DryRun {
-					t.SkipNow()
-				}
+			t.Run("ospf", func(t *testing.T) {
+				birdOspfTest(t, tfn("bird/ospf"))
 			})
 			if *test.DryRun {
 				t.SkipNow()
 			}
 		})
-	}
+		t.Run("frr", func(t *testing.T) {
+			t.Run("bgp", func(t *testing.T) {
+				frrBgpTest(t, tfn("frr/bgp"))
+			})
+			t.Run("ospf", func(t *testing.T) {
+				frrOspfTest(t, tfn("frr/ospf"))
+			})
+			t.Run("isis", func(t *testing.T) {
+				frrIsisTest(t, tfn("frr/isis"))
+			})
+			if *test.DryRun {
+				t.SkipNow()
+			}
+		})
+		if *test.DryRun {
+			t.SkipNow()
+		}
+	})
+	t.Run("vlan", func(t *testing.T) {
+		t.Run("ping", func(t *testing.T) {
+			pingTest(t, netport.TwoVlanNets)
+		})
+		t.Run("slice", func(t *testing.T) {
+			sliceTest(t, tfn("net/slice/vlan"))
+		})
+		t.Run("static", func(t *testing.T) {
+			staticTest(t, tfn("net/static/vlan"))
+		})
+		t.Run("gobgp", func(t *testing.T) {
+			gobgpTest(t, tfn("gobgp/ebgp/vlan"))
+		})
+		t.Run("bird", func(t *testing.T) {
+			t.Run("bgp", func(t *testing.T) {
+				birdBgpTest(t, tfn("bird/bgp/vlan"))
+			})
+			t.Run("ospf", func(t *testing.T) {
+				birdOspfTest(t, tfn("bird/ospf/vlan"))
+			})
+			if *test.DryRun {
+				t.SkipNow()
+			}
+		})
+		t.Run("frr", func(t *testing.T) {
+			t.Run("bgp", func(t *testing.T) {
+				frrBgpTest(t, tfn("frr/bgp/vlan"))
+			})
+			t.Run("ospf", func(t *testing.T) {
+				frrOspfTest(t, tfn("frr/ospf/vlan"))
+			})
+			t.Run("isis", func(t *testing.T) {
+				frrIsisTest(t, tfn("frr/isis/vlan"))
+			})
+			if *test.DryRun {
+				t.SkipNow()
+			}
+		})
+		if *test.DryRun {
+			t.SkipNow()
+		}
+	})
 	if *test.DryRun {
 		t.SkipNow()
 	}
@@ -133,9 +167,6 @@ func loadXeth() {
 	test.Run(xargs...)
 }
 
-func tfn(id, proto string) string {
-	if id == "vlan" {
-		return "testdata/" + proto + "/vlan/conf.yaml.tmpl"
-	}
-	return "testdata/" + proto + "/conf.yaml.tmpl"
+func tfn(dir string) string {
+	return "testdata/" + dir + "/conf.yaml.tmpl"
 }

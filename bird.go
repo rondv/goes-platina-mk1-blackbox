@@ -15,17 +15,13 @@ import (
 func birdNetTest(t *testing.T) {
 	t.Run("bgp", birdNetBgpTest)
 	t.Run("ospf", birdNetOspfTest)
-	if *test.DryRun {
-		t.SkipNow()
-	}
+	test.SkipIfDryRun(t)
 }
 
 func birdVlanTest(t *testing.T) {
 	t.Run("bgp", birdVlanBgpTest)
 	t.Run("ospf", birdVlanOspfTest)
-	if *test.DryRun {
-		t.SkipNow()
-	}
+	test.SkipIfDryRun(t)
 }
 
 func birdNetBgpTest(t *testing.T) {

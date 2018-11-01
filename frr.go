@@ -16,18 +16,14 @@ func frrNetTest(t *testing.T) {
 	t.Run("bgp", frrNetBgpTest)
 	t.Run("ospf", frrNetOspfTest)
 	t.Run("isis", frrNetIsisTest)
-	if *test.DryRun {
-		t.SkipNow()
-	}
+	test.SkipIfDryRun(t)
 }
 
 func frrVlanTest(t *testing.T) {
 	t.Run("bgp", frrVlanBgpTest)
 	t.Run("ospf", frrVlanOspfTest)
 	t.Run("isis", frrVlanIsisTest)
-	if *test.DryRun {
-		t.SkipNow()
-	}
+	test.SkipIfDryRun(t)
 }
 
 func frrNetBgpTest(t *testing.T) {

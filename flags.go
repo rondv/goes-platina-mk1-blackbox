@@ -7,7 +7,7 @@ package main
 import "flag"
 
 var (
-	IsAlpha = flag.Bool("test.alpha", false, "this is a zero based alpha system")
+	IsAlpha = flag.Bool("test.alpha", false, "zero based ports")
 	Goes    = flag.String("test.goes", "./goes-platina-mk1",
 		"GO Embedded System for Platina's Mk1 TOR Switch")
 )

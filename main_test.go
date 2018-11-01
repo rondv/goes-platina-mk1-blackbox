@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 	}()
 	flag.Parse()
 	if *test.DryRun {
-		ecode = m.Run()
+		m.Run()
 		return
 	}
 	if os.Geteuid() != 0 {
@@ -74,9 +74,7 @@ func Test(t *testing.T) {
 		t.Run("gobgp", gobgpNetTest)
 		t.Run("bird", birdNetTest)
 		t.Run("frr", frrNetTest)
-		if *test.DryRun {
-			t.SkipNow()
-		}
+		test.SkipIfDryRun(t)
 	})
 	t.Run("vlan", func(t *testing.T) {
 		t.Run("ping", pingVlanTest)
@@ -86,13 +84,9 @@ func Test(t *testing.T) {
 		t.Run("gobgp", gobgpVlanTest)
 		t.Run("bird", birdVlanTest)
 		t.Run("frr", frrVlanTest)
-		if *test.DryRun {
-			t.SkipNow()
-		}
+		test.SkipIfDryRun(t)
 	})
-	if *test.DryRun {
-		t.SkipNow()
-	}
+	test.SkipIfDryRun(t)
 }
 
 func loadXeth() {

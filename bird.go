@@ -25,7 +25,7 @@ func birdVlanTest(t *testing.T) {
 }
 
 func birdNetBgpTest(t *testing.T) {
-	birdBgpTest(t, "testdata/ /conf.yaml.tmpl")
+	birdBgpTest(t, "testdata/bird/bgp/conf.yaml.tmpl")
 }
 
 func birdVlanBgpTest(t *testing.T) {

@@ -86,6 +86,7 @@ func Test(t *testing.T) {
 		t.Run("frr", frrVlanTest)
 		test.SkipIfDryRun(t)
 	})
+	t.Run("nsif", nsifTest)
 	test.SkipIfDryRun(t)
 }
 

@@ -59,9 +59,12 @@ func TestMain(m *testing.M) {
 	redisd.Start(*Goes, "redisd")
 	defer redisd.Stop()
 	test.Run(*Goes, "hwait", "platina-mk1", "redis.ready", "true", "10")
-	vnetd.Start(*Goes, "vnetd")
-	defer vnetd.Stop()
-	test.Pause("attach vnet debugger to pid ", vnetd.Pid())
+	if *test.MustPause {
+		test.Pause("run vnet-platina-mk1")
+	} else {
+		vnetd.Start(*Goes, "vnetd")
+		defer vnetd.Stop()
+	}
 	test.Run(*Goes, "hwait", "platina-mk1", "vnet.ready", "true", "30")
 	ecode = m.Run()
 }

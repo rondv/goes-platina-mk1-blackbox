@@ -213,7 +213,7 @@ func (static staticPuntStress) Test(t *testing.T) {
 		assert.Comment("checking for not 0.00 bits/sec")
 		assert.True(result[1] != "0.00")
 	} else {
-		assert.Commentf("iperf3 regex failed to find rate [%v]", out)
+		assert.Fatalf("iperf3 regex failed to find rate [%v]", out)
 	}
 	<-done
 }

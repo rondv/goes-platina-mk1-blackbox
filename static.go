@@ -205,11 +205,13 @@ func (static staticPuntStress) Test(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	out, err := static.ExecCmd(t, "CA-1", "iperf3", "-c", "10.3.0.4")
 
-	r, err := regexp.Compile(`([0-9\.]+)\s+Gbits/sec\s+receiver`)
+	r, err := regexp.Compile(`([0-9\.]+)\s+([GMK]?)bits/sec\s+receiver`)
 	assert.Nil(err)
 	result := r.FindStringSubmatch(out)
-	if len(result) == 2 {
-		assert.Comment("iperf3 -", result[1], "Gbits/sec")
+	if len(result) == 3 {
+		assert.Commentf("iperf3 - %v %vbits/sec", result[1], result[2])
+		assert.Comment("checking for not 0.00 bits/sec")
+		assert.True(result[1] != "0.00")
 	} else {
 		assert.Commentf("iperf3 regex failed to find rate [%v]", out)
 	}

@@ -5,7 +5,8 @@ MAINTAINER  stigt
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     arping \
     hping3 \
-    init-system-helpers \    
+    init-system-helpers \
+    iputils-ping \
     iperf3 \
     iproute \
     libc-ares2 \

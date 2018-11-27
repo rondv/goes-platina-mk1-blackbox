@@ -10,7 +10,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R1
-    image: stigt/bird:v2.0.0
+    image: platinasystems/bird:v2.0.2
     privileged: true
     volumes:
       - ./volumes/R1:/etc/bird
@@ -29,7 +29,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R2
-    image: stigt/bird:v2.0.0
+    image: platinasystems/bird:v2.0.2
     privileged: true
     volumes:
       - ./volumes/R2:/etc/bird
@@ -48,7 +48,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R3
-    image: stigt/bird:v2.0.0
+    image: platinasystems/bird:v2.0.2
     privileged: true
     volumes:
       - ./volumes/R3:/etc/bird
@@ -67,7 +67,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R4
-    image: stigt/bird:v2.0.0
+    image: platinasystems/bird:v2.0.2
     privileged: true
     volumes:
       - ./volumes/R4:/etc/bird

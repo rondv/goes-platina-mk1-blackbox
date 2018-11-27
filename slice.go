@@ -214,7 +214,7 @@ func (slice sliceIsolation) Test(t *testing.T) {
 	timeout := 120
 	for i := timeout; i > 0; i-- {
 		out, _ := slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.3.0.4")
-		if !assert.MatchNonFatal(out, "1 packets received") {
+		if !assert.MatchNonFatal(out, "1 received") {
 			time.Sleep(1 * time.Second)
 		} else {
 			ok = true
@@ -257,7 +257,7 @@ func (slice sliceStress) Test(t *testing.T) {
 	timeout := 120
 	for i := timeout; i > 0; i-- {
 		out, _ := slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.3.0.4")
-		if !assert.MatchNonFatal(out, "1 packets received") {
+		if !assert.MatchNonFatal(out, "1 received") {
 			time.Sleep(1 * time.Second)
 		} else {
 			ok = true
@@ -295,7 +295,7 @@ func (slice sliceStressPci) Test(t *testing.T) {
 	timeout := 120
 	for i := timeout; i > 0; i-- {
 		out, _ := slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.3.0.4")
-		if !assert.MatchNonFatal(out, "1 packets received") {
+		if !assert.MatchNonFatal(out, "1 received") {
 			time.Sleep(1 * time.Second)
 		} else {
 			ok = true

@@ -2,7 +2,7 @@ volume: "/testdata/net/static/"
 mapping: "/etc/frr"
 routers:
 - hostname: CA-1
-  image: "stigt/debian-frr:latest"
+  image: "platinasystems/frrouting:6.0"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
@@ -10,7 +10,7 @@ routers:
   - name: dummy0
     address: 192.168.0.1/32
 - hostname: RA-1
-  image: "stigt/debian-frr:latest"
+  image: "platinasystems/frrouting:6.0"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}
@@ -18,7 +18,7 @@ routers:
   - name: {{index . "net1port0"}}
     address: 10.2.0.2/24
 - hostname: RA-2
-  image: "stigt/debian-frr:latest"
+  image: "platinasystems/frrouting:6.0"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net1port1"}}
@@ -26,7 +26,7 @@ routers:
   - name: {{index . "net2port0"}}
     address: 10.3.0.3/24
 - hostname: CA-2
-  image: "stigt/debian-frr:latest"
+  image: "platinasystems/frrouting:6.0"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port1"}}

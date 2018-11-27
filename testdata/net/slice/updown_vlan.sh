@@ -15,8 +15,8 @@ D_MOVE=../docker_move.sh
 
 # A loopback cable is connected between side A and B.
 # All vlans go over this cable
-SIDE_A=eth-30-0
-SIDE_B=eth-31-0
+SIDE_A=xeth10
+SIDE_B=xeth2
 
 case $1 in
     "up")

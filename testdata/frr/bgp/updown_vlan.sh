@@ -15,8 +15,8 @@ D_MOVE=../docker_move.sh
 
 # A loopback cable is connected between side A and B.
 # All vlans go over this cable
-SIDE_A=eth-4-0
-SIDE_B=eth-5-0
+SIDE_A=xeth10
+SIDE_B=xeth2
 
 case $1 in
     "up")
@@ -37,8 +37,6 @@ case $1 in
 	    done	    
 	done
 
-	ip link set mtu 1500 dev $SIDE_A
-	ip link set mtu 1500 dev $SIDE_B	
 	$D_MOVE up R1 $SIDE_A.10 192.168.120.5/24
 	$D_MOVE up R1 $SIDE_B.40 192.168.150.5/24
 	$D_MOVE up R1 $SIDE_A.50 192.168.50.5/24

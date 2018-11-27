@@ -10,7 +10,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R1
-    image: stigt/gobgp:latest
+    image: platinasystems/gobgp:1.33
     privileged: true
     volumes:
       - ./volumes/R1:/etc/gobgp
@@ -29,7 +29,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R2
-    image: stigt/gobgp:latest
+    image: platinasystems/gobgp:1.33
     privileged: true
     volumes:
       - ./volumes/R2:/etc/gobgp
@@ -48,7 +48,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R3
-    image: stigt/gobgp:latest
+    image: platinasystems/gobgp:1.33
     privileged: true
     volumes:
       - ./volumes/R3:/etc/gobgp
@@ -67,7 +67,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R4
-    image: stigt/gobgp:latest
+    image: platinasystems/gobgp:1.33
     privileged: true
     volumes:
       - ./volumes/R4:/etc/gobgp

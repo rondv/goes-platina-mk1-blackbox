@@ -2,7 +2,7 @@ volume: "/testdata/gobgp/ebgp/"
 mapping: "/etc/gobgp"
 routers:
 - hostname: R1
-  image: "stigt/gobgp:latest"
+  image: "platinasystems/gobgp:1.33"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port1"}}
@@ -12,7 +12,7 @@ routers:
   - name: dummy0
     address: 192.168.1.5/32
 - hostname: R2
-  image: "stigt/gobgp:latest"
+  image: "platinasystems/gobgp:1.33"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port0"}}
@@ -22,7 +22,7 @@ routers:
   - name: dummy0
     address: 192.168.1.10/32
 - hostname: R3
-  image: "stigt/gobgp:latest"
+  image: "platinasystems/gobgp:1.33"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net1port1"}}
@@ -32,7 +32,7 @@ routers:
   - name: dummy0
     address: 192.168.2.2/32
 - hostname: R4
-  image: "stigt/gobgp:latest"
+  image: "platinasystems/gobgp:1.33"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net3port1"}}

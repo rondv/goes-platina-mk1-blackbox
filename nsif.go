@@ -97,7 +97,7 @@ func (nsif nsifNeighbor) Test(t *testing.T) {
 	}
 }
 
-// delete namespace without firt moving interface(s) out to default ns
+// delete namespace without first moving interface(s) out to default ns
 // verify interface is now back in default namespace anyway
 type nsifDelNets []netport.NetDev
 

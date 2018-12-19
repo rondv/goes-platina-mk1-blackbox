@@ -90,6 +90,7 @@ func Test(t *testing.T) {
 		test.SkipIfDryRun(t)
 	})
 	t.Run("nsif", nsifTest)
+	t.Run("multipath", mpTest)
 	test.SkipIfDryRun(t)
 }
 

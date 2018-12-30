@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 	redisd.Start(*Goes, "redisd")
 	defer redisd.Stop()
 	test.Run(*Goes, "hwait", "platina-mk1", "redis.ready", "true", "10")
-	if *test.MustPause {
+	if *NoVnet {
 		test.Pause("run vnet-platina-mk1")
 	} else {
 		vnetd.Start(*Goes, "vnetd")

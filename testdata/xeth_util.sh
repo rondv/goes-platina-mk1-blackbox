@@ -3,13 +3,37 @@
 xeth_driver="platina-mk1"
 xeth_type="xeth"
 
-xeth_all()
+# in order: xeth, vlan, br
+xeth_fp()
 {
     for i in $(ls -1 /sys/class/net); do
         if [ $i == "lo" ]; then
             continue
         fi
-        if $(ethtool -i $i | egrep -q -e "driver: xeth" -e VLAN); then
+        if $(ethtool -i $i | egrep -q -e "driver: xeth"); then
+            echo $i
+        fi
+    done
+}
+xeth_vlan()
+{
+    for i in $(ls -1 /sys/class/net); do
+        if [ $i == "lo" ]; then
+            continue
+        fi
+        if $(ethtool -i $i | egrep -q -e VLAN); then
+            echo $i
+        fi
+    done
+}
+
+xeth_br()
+{
+    for i in $(ls -1 /sys/class/net); do
+        if [ $i == "lo" ]; then
+            continue
+        fi
+        if $(ethtool -i $i | egrep -q -e "driver: bridge"); then
             echo $i
         fi
     done
@@ -96,55 +120,21 @@ xeth_del()
     done
 }
 
-xeth_br_add()
-{
-    vid=$1
-    shift
-    ip link add xethbr.$vid type ${xeth_type}
-}
-
-xeth_br_del()
-{
-    vid=$1
-    shift
-    ip link del xethbr.$vid type ${xeth_type}
-}
-
-xeth_brm_add()
-{
-    vid=$1
-    shift
-    taguntag=$1
-    shift
-    for i in $xeth_list; do
-        ip link add $i.$vid$taguntag type ${xeth_type}
-    done
-}
-
-xeth_brm_del()
-{
-    vid=$1
-    shift
-    taguntag=$1
-    shift
-    for i in $xeth_list; do
-        ip link del $i.$vid$taguntag type ${xeth_type}
-    done
-}
-
-xeth_br_show()
-{
-    vid=$1
-    shift
-    ip link | egrep eth.$vid
-    ip link | egrep eth[0-9]+.$vid
-}
-
 xeth_show()
 {
     for i in $xeth_list; do
         #ip link show $i
         ip addr show dev $i
+    done
+}
+
+xeth_br_show()
+{
+    for i in $(xeth_br); do
+        echo
+        echo "bridge "$i
+        bridge link | grep $i
+        bridge fdb | grep $i
     done
 }
 
@@ -181,9 +171,14 @@ xeth_to_netns()
     ip netns exec $netns ./xeth_util.sh show
 }
 
+xeth_netns_list()
+{
+    echo $(ip netns | sed -e "s/ .*//" | sort -V)
+}
+
 xeth_netns_del()
 {
-    for netns in $(ip netns); do
+    for netns in $(xeth_netns_list); do
       for i in $(ip netns exec $netns ./xeth_util.sh echo); do
         ip netns exec $netns ip link set $i netns 1
       done
@@ -193,10 +188,15 @@ xeth_netns_del()
 
 xeth_netns_show()
 {
+    show_arp=false
     show_ip=false
     show_route=false
     show_vrf=false
 
+    if [ "$1" == "arp" ]; then
+      show_arp=true
+      shift
+    fi
     if [ "$1" == "ip" ]; then
       show_ip=true
       shift
@@ -209,13 +209,34 @@ xeth_netns_show()
       show_vrf=true
       shift
     fi
-    for netns in $(ip netns | sort -V); do
+
+    echo "netns default"
+    if $show_arp; then
+      arp
+    fi
+    if $show_ip; then
+      ./xeth_util.sh show | grep -e 'inet '|sed -e "s/inet \(.*\) scope global \(.*\)/\2\t\1/"
+      ./xeth_util.sh br   | grep -e 'inet '|sed -e "s/inet \(.*\) scope global \(.*\)/\2\t\1/"
+    else
+      ./xeth_util.sh show
+      ./xeth_util.sh br
+    fi
+    if $show_route; then
+      ip route
+    fi
+
+    for netns in $(xeth_netns_list); do
       echo
       echo "netns "$netns
+      if $show_arp; then
+        arp
+      fi
       if $show_ip; then
         ip netns exec $netns ./xeth_util.sh show | grep -e 'inet '|sed -e "s/inet \(.*\) scope global \(.*\)/\2\t\1/"
+        ip netns exec $netns ./xeth_util.sh br   | grep -e 'inet '|sed -e "s/inet \(.*\) scope global \(.*\)/\2\t\1/"
       else
         ip netns exec $netns ./xeth_util.sh show
+        ip netns exec $netns ./xeth_util.sh br
       fi
       if $show_route; then
         ip netns exec $netns ip route
@@ -225,13 +246,13 @@ xeth_netns_show()
       echo ---
       echo vrf
       echo ---
-      goes vnet show fe1 l3 |grep -o " intf.xeth.*vrf[^ ]* " |sort -uV|sed -e "s/intf.//; s/vrf.//; s/\/.*//" |grep -v 0$
+      goes vnet show fe1 l3 |grep -o " intf.*vrf[^ ]* " |sort -uV|sed -e "s/intf.//; s/vrf.//; s/\/.*//" |grep -v 0$
     fi
 }
 
 xeth_netns_echo()
 {
-    for netns in $(ip netns | sort -V); do
+    for netns in $(xeth_netns_list); do
       echo -n "netns "$netns": "
       ip netns exec $netns ./xeth_util.sh echo
     done
@@ -239,7 +260,8 @@ xeth_netns_echo()
 
 xeth_netns_flap()
 {
-    for netns in $(ip netns); do
+    ./xeth_util.sh flap
+    for netns in $(xeth_netns_list); do
       echo "netns "$netns
       ip netns exec $netns ./xeth_util.sh flap
     done
@@ -247,7 +269,7 @@ xeth_netns_flap()
 
 xeth_netns_carrier()
 {
-    for netns in $(ip netns); do
+    for netns in $(xeth_netns_list); do
       echo "netns "$netns
       ip netns exec $netns ./xeth_util.sh carrier
     done
@@ -275,7 +297,9 @@ elif [ $range == "eth_range" ]; then
     xeth_list=$(eth_range $start $stop)
 
 else
-    xeth_list="$(xeth_all | sort -V)"
+    xeth_list="$(xeth_fp | sort -V)" 
+    xeth_list+=" $(xeth_vlan | sort -V)"
+    xeth_list+=" $(xeth_br | sort -V)"
 fi
 
 cmd="help"
@@ -289,6 +313,8 @@ fi
 
 if [ $cmd == "show" ]; then
     xeth_show $xeth_list
+elif [ $cmd == "br" ]; then
+    xeth_br_show
 elif [ $cmd == "showup" ]; then
     xeth_show $xeth_list | grep -i state.up
 elif [ $cmd == "echo" ]; then
@@ -301,18 +327,6 @@ elif [ $cmd == "reset" ]; then
 elif [ $cmd == "test_init" ]; then
     rmmod ${xeth_driver}
     modprobe ${xeth_driver}
-elif [ $cmd == "add" ]; then
-    xeth_add $xeth_list
-elif [ $cmd == "br_add" ]; then
-    xeth_br_add $1
-elif [ $cmd == "br_del" ]; then
-    xeth_br_del $1
-elif [ $cmd == "brm_add" ]; then
-    xeth_brm_add $1 $2 $xeth_list
-elif [ $cmd == "brm_del" ]; then
-    xeth_brm_del $1 $2 $xeth_list
-elif [ $cmd == "br_show" ]; then
-    xeth_br_show $1
 elif [ $cmd == "up" ]; then
     xeth_up $xeth_list
 elif [ $cmd == "carrier" ]; then
@@ -331,7 +345,10 @@ elif [ $cmd == "netns_del" ]; then
     xeth_netns_del
 elif [ $cmd == "netns_show" ]; then
     xeth_netns_show $*
+elif [ $cmd == "netns_showup" ]; then
+    xeth_netns_show $* | egrep -i -e netns -e state.up
 elif [ $cmd == "netns_echo" ]; then
+    echo "list: $(xeth_netns_list)"
     echo "default: "$(xeth_echo)
     xeth_netns_echo
 elif [ $cmd == "netns_flap" ]; then

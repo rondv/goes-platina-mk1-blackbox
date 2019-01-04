@@ -5,33 +5,42 @@ if ! [ $(id -u) = 0 ]; then
    exit 1
 fi
 
-# document all known issues on same line as test
-testcases=("Test/ready"
-	   "Test/nodocker/ping-gateways"
-	   "Test/nodocker/ping-remotes"
-	   "Test/nodocker/hping01"
-	   "Test/nodocker/hping10"
-	   "Test/nodocker/hping30"
-	   "Test/nodocker/hping60"	   	   	   
-	   "Test/docker/bird/bgp/eth"
-	   "Test/docker/bird/bgp/vlan"
-	   "Test/docker/bird/ospf/eth"
-	   "Test/docker/bird/ospf/vlan" # --- FAIL: Test/docker/bird/ospf/vlan/connectivity (RTA_MULTIPATH w/out gw)
-	   "Test/docker/frr/bgp/eth"
-	   "Test/docker/frr/bgp/vlan"
-	   "Test/docker/frr/isis/eth"
-	   "Test/docker/frr/isis/vlan"
-	   "Test/docker/frr/ospf/eth"
-	   "Test/docker/frr/ospf/vlan"
-	   "Test/docker/gobgp/ebgp/eth"
-	   "Test/docker/gobgp/ebgp/vlan"
-	   "Test/docker/net/slice/vlan" # --- FAIL: Test/docker/net/slice/vlan/stress-pci (reboot to recover)
-	   "Test/docker/net/dhcp/eth"
-	   "Test/docker/net/dhcp/vlan"
-	   "Test/docker/net/static/eth"
-	   "Test/docker/net/static/vlan")
+# bb must run from parent directory to locate testdata/netport.yaml
+cd ..
+tester=./goes-platina-mk1-blackbox.test
 
-tester=../goes-platina-mk1.test
+log_dir="testdata/log"
+mkdir -p ${log_dir}
+echo "log directory: "${log_dir}
+
+touch ${log_dir}/test.log
+date >> ${log_dir}/test.log
+
+
+testcases=(
+    "Test/net/ping"
+    "Test/net/dhcp"
+    "Test/net/static"
+    "Test/net/gobgp"
+    "Test/net/bird/bgp"
+    "Test/net/bird/ospf"
+    "Test/net/frr/bgp"
+    "Test/net/frr/ospf"
+    "Test/net/frr/isis"
+    "Test/vlan/ping"
+    "Test/vlan/dhcp"
+    "Test/vlan/slice"
+    "Test/vlan/static"
+    "Test/vlan/gobgp"
+    "Test/vlan/bird/bgp"
+    "Test/vlan/bird/ospf"
+    "Test/vlan/frr/bgp"
+    "Test/vlan/frr/ospf"
+    "Test/vlan/frr/isis"
+    "Test/bridge/ping"
+    "Test/nsif"
+    "Test/multipath"
+)
 
 quit=0
 fails=0
@@ -50,17 +59,20 @@ fix_it() {
   docker stop CA-1 RA-1 RA-2 CA-2 CB-1 RB-1 RB-2 CB-2 > /dev/null 2>&1
   docker rm -v CA-1 RA-1 RA-2 CA-2 CB-1 RB-1 RB-2 CB-2 > /dev/null 2>&1
   ip -all netns del
-  ./xeth_util.sh test_init
+  ./testdata/xeth_util.sh test_init
 }
 
-if [ "$1" == "list" ]; then
+
+if [ "$1" == "fix_it" ]; then
+    fix_it
+elif [ "$1" == "dryrun" ]; then
+    ${tester} -test.v  -test.dryrun
+elif [ "$1" == "list" ]; then
     id=0
     for t in ${testcases[@]}; do
         id=$(($id+1))	
         echo $id ":" $t
     done
-    echo
-    grep -A 30 testcases\= $0 | grep \#
 elif [ "$1" == "run" ]; then
     test_range=${testcases[@]}
 elif [ "$1" == "run_range" ]; then
@@ -71,12 +83,23 @@ elif [ "$1" == "run_range" ]; then
     stop=$1
     stop=$(($stop-1))
     shift
+    if [ "$1" == "verbose" ]; then
+       test_flags="-test.vvv"
+       shift
+    fi
     test_range=""
     for i in $(seq $start $stop); do
         test_range="${test_range} ${testcases[$i]}"
     done
+elif [ "$1" == "run_step" ]; then
+    shift
+    start=$1
+    start=$(($start-1))
+    echo "call test directly..."
+    echo "(cd ..; ${tester} -test.vvv -test.pause -test.step -test.run=${testcases[$start]})"
+    exit
 else
-    echo "list | run | run_range <start end>"
+    echo "fix_it | dryrun | list | run | run_range <start end [verbose]> | run_step <test_num>"
 fi
 
 test_count=$(echo $test_range | wc -w)
@@ -93,19 +116,22 @@ if [ -z "$GOPATH" ]; then
 fi
 
 count=0
+
+fix_it
+
 for t in ${test_range}; do
     log=${t//\//_}.out
     count=$(($count+1))
     printf "Running %46s " $t" ($count of $test_count) : "
-    fix_it
-    GOPATH=$GOPATH ${tester} -test.v -test.run=$t > /tmp/out 2>&1
+    echo "$GOPATH ${tester} -test.v ${test_flags} -test.run=$t " >> ${log_dir}/test.log
+    GOPATH=$GOPATH ${tester} -test.v ${test_flags} -test.run=$t > ${log_dir}/test.out 2>&1
 
     if [ $? == 0 ]; then
         echo "OK"
-        mv /tmp/out ./$log.OK
+        mv ${log_dir}/test.out ${log_dir}/$log.OK
     else
-        mv /tmp/out ./$log
-        if grep -q panic ./$log; then
+        mv ${log_dir}/test.out ${log_dir}/$log.error
+        if grep -q panic ${log_dir}/$log.error; then
             echo "Crashed"
         else
             echo "Failed"
@@ -121,6 +147,6 @@ done
 echo
 echo "$fails testcase(s) failed."
 
-fix_it
+echo fix_it to cleanup
 
 exit 0

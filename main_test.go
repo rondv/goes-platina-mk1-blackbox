@@ -89,6 +89,10 @@ func Test(t *testing.T) {
 		t.Run("frr", frrVlanTest)
 		test.SkipIfDryRun(t)
 	})
+	t.Run("bridge", func(t *testing.T) {
+		t.Run("ping", pingBridgeTest)
+		test.SkipIfDryRun(t)
+	})
 	t.Run("nsif", nsifTest)
 	t.Run("multipath", mpTest)
 	test.SkipIfDryRun(t)

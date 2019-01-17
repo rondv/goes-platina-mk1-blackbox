@@ -51,8 +51,14 @@ TechList = [
          cmdlist={
              "arp -v",
              "ip route",
+             "ip neighbor",
              "ip netns",
              "ip -s link",
+         }),
+    Tech(name="interfaces",
+         cmdlist={
+             "cat /etc/network/interfaces",
+             "grep -H . /etc/network/interfaces.d/*",
          }),
     Tech(name="xeth_util",
          cmdlist={

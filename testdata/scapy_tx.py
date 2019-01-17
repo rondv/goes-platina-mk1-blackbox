@@ -150,8 +150,8 @@ for dst_port in range(0,count):
       p=(Ether(src=SA, dst=DA, type=60)/payload60)
 
   if len(txintf) == 0:
-    print p.show(dump=True)
-    print "data=0x"+str(p).encode("HEX")
+    print(p.show(dump=True))
+    print("data=0x"+str(p).encode("HEX"))
   else:
     sendp(p, iface=txintf, verbose=0)
 
@@ -159,6 +159,6 @@ for dst_port in range(0,count):
     SA = mac_incr(SA, 1)
 
 if len(txintf) == 0:
-  print "No packets sent"
+  print("No packets sent")
 else:
-  print str(count) + " packets sent to " + txintf
+  print(str(count) + " packets sent to " + txintf)

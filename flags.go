@@ -4,12 +4,36 @@
 
 package main
 
-import "flag"
+import (
+	"flag"
+	"os"
+)
+
+const (
+	DefaultGoes   = "./goes-platina-mk1"
+	InstalledGoes = "/usr/bin/goes"
+)
 
 var (
 	IsAlpha = flag.Bool("test.alpha", false, "zero based ports")
-	Goes    = flag.String("test.goes", "./goes-platina-mk1",
+	Goes    = flag.String("test.goes", DefaultGoes,
 		"GO Embedded System for Platina's Mk1 TOR Switch")
-	SingleStep = flag.Bool("test.step", false, "single step (manual testing)")
-	NoVnet = flag.Bool("test.novnet", false, "manual vnet start (debugger)")
+	SingleStep = flag.Bool("test.step", false,
+		"single step (manual testing)")
+	NoVnet = flag.Bool("test.novnet", false,
+		"manual vnet start (debugger)")
 )
+
+func assertFlags() {
+	flag.Parse()
+	if _, err := os.Stat(*Goes); err != nil {
+		if *Goes != DefaultGoes {
+			panic(err)
+		}
+		if _, err = os.Stat(InstalledGoes); err != nil {
+			panic("can't find goes")
+		} else {
+			*Goes = InstalledGoes
+		}
+	}
+}

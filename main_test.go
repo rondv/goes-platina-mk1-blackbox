@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/platinasystems/test"
@@ -49,10 +50,10 @@ func TestMain(m *testing.M) {
 			}
 		}
 		if bytes.Index(b, []byte("@xeth")) >= 0 {
-			test.Run("rmmod", "platina-mk1")
+			rmmods()
 		}
 	}
-	loadXeth()
+	insmods()
 	netport.Init()
 	ethtool.Init()
 	redisd.Start(*Goes, "redisd")
@@ -97,9 +98,12 @@ func Test(t *testing.T) {
 	test.SkipIfDryRun(t)
 }
 
-func loadXeth() {
-	const ko = "platina-mk1.ko"
-	xargs := []string{"modprobe", "platina-mk1"}
+func insmods() {
+	xargs := []string{"modprobe", *PlatformDriver}
+	ko := *PlatformDriver
+	if !strings.HasSuffix(ko, ".ko") {
+		ko += ".ko"
+	}
 	if _, err := os.Stat(ko); err == nil {
 		xargs = []string{"insmod", ko}
 	}
@@ -112,4 +116,8 @@ func loadXeth() {
 		xargs = append(xargs, "dyndbg=-pmf")
 	}
 	test.Run(xargs...)
+}
+
+func rmmods() {
+	test.Run("rmmod", strings.TrimSuffix(*PlatformDriver, ".ko"))
 }

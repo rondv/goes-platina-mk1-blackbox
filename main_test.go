@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -29,7 +28,7 @@ func TestMain(m *testing.M) {
 			os.Exit(ecode)
 		}
 	}()
-	flag.Parse()
+	assertFlags()
 	if *test.DryRun {
 		m.Run()
 		return

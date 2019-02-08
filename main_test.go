@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 
@@ -66,6 +67,9 @@ func TestMain(m *testing.M) {
 		defer vnetd.Stop()
 	}
 	test.Run(*Goes, "hwait", "platina-mk1", "vnet.ready", "true", "30")
+	if testing.Verbose() {
+		uutInfo()
+	}
 	ecode = m.Run()
 }
 
@@ -120,4 +124,41 @@ func insmods() {
 
 func rmmods() {
 	test.Run("rmmod", strings.TrimSuffix(*PlatformDriver, ".ko"))
+}
+
+func uutInfo() {
+	fmt.Println("---")
+	o, err := exec.Command(*Goes, "show", "buildid").Output()
+	if err == nil && len(o) > 0 {
+		fmt.Print(*Goes, ": |\n    buildid/", string(o))
+	}
+	o, err = exec.Command(*Goes, "vnetd", "-path").Output()
+	if err == nil && len(o) > 0 {
+		vnet := string(o[:len(o)-1])
+		o, err = exec.Command(*Goes, "show", "buildid", vnet).Output()
+		if err == nil && len(o) > 0 {
+			fmt.Print(vnet, ": |\n    buildid/", string(o))
+		}
+	}
+	pd := *PlatformDriver
+	ko := pd
+	if !strings.HasSuffix(ko, ".ko") {
+		ko += ".ko"
+	}
+	if _, err = os.Stat(ko); err == nil {
+		pd = ko
+	}
+	o, err = exec.Command("/sbin/modinfo", pd).Output()
+	if err == nil && len(o) > 0 {
+		const srcversion = "srcversion:"
+		s := string(o)
+		i := strings.Index(s, srcversion)
+		if i > 0 {
+			s = s[i+len(srcversion):]
+			i = strings.Index(s, "\n")
+			fmt.Print(pd, ": |\n    ",
+				strings.TrimLeft(s[:i+1], " \t"))
+		}
+	}
+	fmt.Println("...")
 }

@@ -18,6 +18,8 @@ var (
 	IsAlpha = flag.Bool("test.alpha", false, "zero based ports")
 	Goes    = flag.String("test.goes", DefaultGoes,
 		"GO Embedded System for Platina's Mk1 TOR Switch")
+	PlatformDriver = flag.String("test.platform-driver", "platina-mk1",
+		"Linux Kernel Platform Driver")
 	SingleStep = flag.Bool("test.step", false,
 		"single step (manual testing)")
 	NoVnet = flag.Bool("test.novnet", false,

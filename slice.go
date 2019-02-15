@@ -14,6 +14,9 @@ import (
 )
 
 func sliceVlanTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	sliceTest(t, "testdata/net/slice/vlan/conf.yaml.tmpl")
 }
 

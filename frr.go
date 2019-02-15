@@ -241,6 +241,10 @@ type frrBgpFlap struct{ *docker.Docket }
 func (frrBgpFlap) String() string { return "flap" }
 
 func (frr frrBgpFlap) Test(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
 	assert := test.Assert{t}
 
 	for _, r := range frr.Routers {
@@ -460,6 +464,10 @@ type frrOspfFlap struct{ *docker.Docket }
 func (frrOspfFlap) String() string { return "flap" }
 
 func (frr frrOspfFlap) Test(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
 	assert := test.Assert{t}
 
 	for _, r := range frr.Routers {
@@ -683,6 +691,10 @@ type frrIsisFlap struct{ *docker.Docket }
 func (frrIsisFlap) String() string { return "flap" }
 
 func (frr frrIsisFlap) Test(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
 	assert := test.Assert{t}
 
 	for _, r := range frr.Routers {

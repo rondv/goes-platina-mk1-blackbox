@@ -15,10 +15,16 @@ import (
 )
 
 func dhcpNetTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	dhcpTest(t, "testdata/net/dhcp/conf.yaml.tmpl")
 }
 
 func dhcpVlanTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	dhcpTest(t, "testdata/net/dhcp/vlan/conf.yaml.tmpl")
 }
 

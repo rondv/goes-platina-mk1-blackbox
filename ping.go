@@ -25,6 +25,9 @@ func pingVlanTest(t *testing.T) {
 }
 
 func pingBridgeTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	pingTest(t, netport.BridgeNets1)
 	//pingTest(t, netport.BridgeNets2)
 }
@@ -74,7 +77,7 @@ func (pingFlood) String() string {
 }
 
 func (list pingFlood) Test(t *testing.T) {
-	if *Flood <= 0 {
+	if testing.Short() || *Flood <= 0 {
 		t.SkipNow()
 	}
 	assert := test.Assert{t}

@@ -132,6 +132,10 @@ type staticFlap struct{ *docker.Docket }
 func (staticFlap) String() string { return "flap" }
 
 func (static staticFlap) Test(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
 	assert := test.Assert{t}
 
 	for _, r := range static.Routers {
@@ -191,8 +195,11 @@ type staticPuntStress struct{ *docker.Docket }
 func (staticPuntStress) String() string { return "punt-stress" }
 
 func (static staticPuntStress) Test(t *testing.T) {
-	assert := test.Assert{t}
+	if testing.Short() || *test.DryRun {
+		t.SkipNow()
+	}
 
+	assert := test.Assert{t}
 	assert.Comment("Check punt stress with iperf3")
 
 	done := make(chan bool, 1)

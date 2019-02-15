@@ -14,11 +14,19 @@ import (
 )
 
 func gobgpNetTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	gobgpTest(t, "testdata/gobgp/ebgp/conf.yaml.tmpl")
+	test.SkipIfDryRun(t)
 }
 
 func gobgpVlanTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
 	gobgpTest(t, "testdata/gobgp/ebgp/vlan/conf.yaml.tmpl")
+	test.SkipIfDryRun(t)
 }
 
 func gobgpTest(t *testing.T, tmpl string) {

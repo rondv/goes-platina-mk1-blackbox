@@ -16,14 +16,19 @@ const (
 
 var (
 	IsAlpha = flag.Bool("test.alpha", false, "zero based ports")
-	Goes    = flag.String("test.goes", DefaultGoes,
+	DynDbg  = flag.String("test.dyndbg", "",
+		"platform-driver load flag (use +pmf for verbose)")
+	Goes = flag.String("test.goes", DefaultGoes,
 		"GO Embedded System for Platina's Mk1 TOR Switch")
+	NoVnet = flag.Bool("test.novnet", false,
+		"manual vnet start (debugger)")
 	PlatformDriver = flag.String("test.platform-driver", "platina-mk1",
 		"Linux Kernel Platform Driver")
 	SingleStep = flag.Bool("test.step", false,
 		"single step (manual testing)")
-	NoVnet = flag.Bool("test.novnet", false,
-		"manual vnet start (debugger)")
+	Repeat   = flag.Uint("test.repeat", 1, "test suite iterations")
+	XethStat = flag.Bool("test.xeth-stat", false,
+		"show /sys/kernel/platina-mk1/xeth stats")
 )
 
 func assertFlags() {

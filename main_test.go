@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -25,6 +26,9 @@ func TestMain(m *testing.M) {
 		if r := recover(); r != nil {
 			fmt.Fprintln(os.Stderr, r)
 			ecode = 1
+		}
+		if *XethStat {
+			showXethStats()
 		}
 		if ecode != 0 {
 			os.Exit(ecode)
@@ -70,36 +74,49 @@ func TestMain(m *testing.M) {
 	if testing.Verbose() {
 		uutInfo()
 	}
-	ecode = m.Run()
+	for i := uint(0); ecode == 0 && i < *Repeat; i++ {
+		if ecode = m.Run(); ecode != 0 {
+			test.Pause()
+		}
+	}
 }
 
 func Test(t *testing.T) {
-	t.Run("net", func(t *testing.T) {
-		t.Run("ping", pingNetTest)
-		t.Run("dhcp", dhcpNetTest)
-		t.Run("static", staticNetTest)
-		t.Run("gobgp", gobgpNetTest)
-		t.Run("bird", birdNetTest)
-		t.Run("frr", frrNetTest)
+	mayRun(t, "net", func(t *testing.T) {
+		mayRun(t, "ping", pingNetTest)
+		mayRun(t, "dhcp", dhcpNetTest)
+		mayRun(t, "static", staticNetTest)
+		mayRun(t, "gobgp", gobgpNetTest)
+		mayRun(t, "bird", birdNetTest)
+		mayRun(t, "frr", frrNetTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Run("vlan", func(t *testing.T) {
-		t.Run("ping", pingVlanTest)
-		t.Run("dhcp", dhcpVlanTest)
-		t.Run("slice", sliceVlanTest)
-		t.Run("static", staticVlanTest)
-		t.Run("gobgp", gobgpVlanTest)
-		t.Run("bird", birdVlanTest)
-		t.Run("frr", frrVlanTest)
+	mayRun(t, "vlan", func(t *testing.T) {
+		mayRun(t, "ping", pingVlanTest)
+		mayRun(t, "dhcp", dhcpVlanTest)
+		mayRun(t, "slice", sliceVlanTest)
+		mayRun(t, "static", staticVlanTest)
+		mayRun(t, "gobgp", gobgpVlanTest)
+		mayRun(t, "bird", birdVlanTest)
+		mayRun(t, "frr", frrVlanTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Run("bridge", func(t *testing.T) {
-		t.Run("ping", pingBridgeTest)
+	mayRun(t, "bridge", func(t *testing.T) {
+		mayRun(t, "ping", pingBridgeTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Run("nsif", nsifTest)
-	t.Run("multipath", mpTest)
+	mayRun(t, "nsif", nsifTest)
+	mayRun(t, "multipath", mpTest)
 	test.SkipIfDryRun(t)
+}
+
+func mayRun(t *testing.T, name string, f func(*testing.T)) bool {
+	var ret bool
+	t.Helper()
+	if !t.Failed() {
+		ret = t.Run(name, f)
+	}
+	return ret
 }
 
 func insmods() {
@@ -114,10 +131,8 @@ func insmods() {
 	if *IsAlpha {
 		xargs = append(xargs, "alpha=1")
 	}
-	if *test.VVV {
-		xargs = append(xargs, "dyndbg=+pmf")
-	} else {
-		xargs = append(xargs, "dyndbg=-pmf")
+	if len(*DynDbg) > 0 {
+		xargs = append(xargs, "dyndbg="+*DynDbg)
 	}
 	test.Run(xargs...)
 }
@@ -128,6 +143,7 @@ func rmmods() {
 
 func uutInfo() {
 	fmt.Println("---")
+	defer fmt.Println("...")
 	o, err := exec.Command(*Goes, "show", "buildid").Output()
 	if err == nil && len(o) > 0 {
 		fmt.Print(*Goes, ": |\n    buildid/", string(o))
@@ -160,5 +176,24 @@ func uutInfo() {
 				strings.TrimLeft(s[:i+1], " \t"))
 		}
 	}
-	fmt.Println("...")
+}
+
+func showXethStats() {
+	const dn = "/sys/kernel/platina-mk1/xeth"
+	fmt.Println("---")
+	defer fmt.Println("...")
+	fis, err := ioutil.ReadDir(dn)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, fi := range fis {
+		bn := fi.Name()
+		b, err := ioutil.ReadFile(filepath.Join(dn, bn))
+		if err != nil {
+			fmt.Print(bn, ": ", err, "\n")
+		} else if s := string(b); s != "0\n" {
+			fmt.Print(bn, ": ", s)
+		}
+	}
 }

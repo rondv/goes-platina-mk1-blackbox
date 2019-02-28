@@ -29,7 +29,7 @@ func pingBridgeTest(t *testing.T) {
 		t.SkipNow()
 	}
 	pingTest(t, netport.BridgeNets1)
-	//pingTest(t, netport.BridgeNets2)
+	pingTest(t, netport.BridgeNets2)
 }
 
 func pingTest(t *testing.T, netdevs netport.NetDevs) {

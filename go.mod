@@ -1,3 +1,3 @@
 module github.com/platinasystems/goes-platina-mk1-blackbox
 
-require github.com/platinasystems/test v1.1.0
+require github.com/platinasystems/test v1.2.0

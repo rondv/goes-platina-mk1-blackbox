@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 		}
 	}
 	insmods()
-	netport.Init()
+	netport.Init(*Goes)
 	ethtool.Init()
 	redisd.Start(*Goes, "redisd")
 	defer redisd.Stop()

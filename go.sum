@@ -22,6 +22,8 @@ github.com/platinasystems/test v1.1.0 h1:+xPqJkXpdvZ1ShhRUCV3vT3Eu4Bdg5TJ4eTMDxx
 github.com/platinasystems/test v1.1.0/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 github.com/platinasystems/test v1.2.0 h1:6U/NdCRqFt5qBHiWdNC+S/rymO+gevbXAS5O4hdJBvM=
 github.com/platinasystems/test v1.2.0/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
+github.com/platinasystems/test v1.2.1 h1:PDB1jV0fD/Z+DVFZrFXZEmMU0jmU31IBGVl+xRWHRIw=
+github.com/platinasystems/test v1.2.1/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 golang.org/x/net v0.0.0-20181023162649-9b4f9f5ad519 h1:x6rhz8Y9CjbgQkccRGmELH6K+LJj7tOoh3XWeC1yaQM=
 golang.org/x/net v0.0.0-20181023162649-9b4f9f5ad519/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=

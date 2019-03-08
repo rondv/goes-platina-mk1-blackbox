@@ -31,6 +31,7 @@ func TestMain(m *testing.M) {
 			showXethStats()
 		}
 		if ecode != 0 {
+			test.Pause()
 			os.Exit(ecode)
 		}
 	}()
@@ -74,11 +75,7 @@ func TestMain(m *testing.M) {
 	if testing.Verbose() {
 		uutInfo()
 	}
-	for i := uint(0); ecode == 0 && i < *Repeat; i++ {
-		if ecode = m.Run(); ecode != 0 {
-			test.Pause()
-		}
-	}
+	ecode = m.Run()
 }
 
 func Test(t *testing.T) {

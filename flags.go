@@ -26,7 +26,6 @@ var (
 		"Linux Kernel Platform Driver")
 	SingleStep = flag.Bool("test.step", false,
 		"single step (manual testing)")
-	Repeat   = flag.Uint("test.repeat", 1, "test suite iterations")
 	XethStat = flag.Bool("test.xeth-stat", false,
 		"show /sys/kernel/platina-mk1/xeth stats")
 )

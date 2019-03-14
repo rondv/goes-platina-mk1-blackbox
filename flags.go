@@ -15,13 +15,8 @@ const (
 )
 
 var (
-	IsAlpha = flag.Bool("test.alpha", false, "zero based ports")
-	DynDbg  = flag.String("test.dyndbg", "",
-		"platform-driver load flag (use +pmf for verbose)")
 	Goes = flag.String("test.goes", DefaultGoes,
 		"GO Embedded System for Platina's Mk1 TOR Switch")
-	NoVnet = flag.Bool("test.novnet", false,
-		"manual vnet start (debugger)")
 	PlatformDriver = flag.String("test.platform-driver", "platina-mk1",
 		"Linux Kernel Platform Driver")
 	SingleStep = flag.Bool("test.step", false,

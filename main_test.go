@@ -21,7 +21,6 @@ import (
 
 func TestMain(m *testing.M) {
 	var ecode int
-	var redisd, vnetd test.Daemon
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Fprintln(os.Stderr, r)
@@ -45,33 +44,28 @@ func TestMain(m *testing.M) {
 	}
 	if b, err := ioutil.ReadFile("/proc/net/unix"); err == nil {
 		for _, atsock := range []string{
+			"@xeth",
+		} {
+			if bytes.Index(b, []byte(atsock)) < 0 {
+				panic(fmt.Errorf("no %s, are modules loaded?",
+					atsock))
+			}
+		}
+		for _, atsock := range []string{
 			"@redisd",
 			"@redis.reg",
 			"@redis.pub",
 			"@vnet",
 			"@vnetd",
 		} {
-			if bytes.Index(b, []byte(atsock)) >= 0 {
-				panic(fmt.Errorf("%s %s", atsock, "in use"))
+			if bytes.Index(b, []byte(atsock)) < 0 {
+				panic(fmt.Errorf("no %s, is goes running?",
+					atsock))
 			}
 		}
-		if bytes.Index(b, []byte("@xeth")) >= 0 {
-			rmmods()
-		}
 	}
-	insmods()
 	netport.Init(*Goes)
 	ethtool.Init()
-	redisd.Start(*Goes, "redisd")
-	defer redisd.Stop()
-	test.Run(*Goes, "hwait", "platina-mk1", "redis.ready", "true", "10")
-	if *NoVnet {
-		test.Pause("run vnet-platina-mk1")
-	} else {
-		vnetd.Start(*Goes, "vnetd")
-		defer vnetd.Stop()
-	}
-	test.Run(*Goes, "hwait", "platina-mk1", "vnet.ready", "true", "30")
 	if testing.Verbose() {
 		uutInfo()
 	}
@@ -114,28 +108,6 @@ func mayRun(t *testing.T, name string, f func(*testing.T)) bool {
 		ret = t.Run(name, f)
 	}
 	return ret
-}
-
-func insmods() {
-	xargs := []string{"modprobe", *PlatformDriver}
-	ko := *PlatformDriver
-	if !strings.HasSuffix(ko, ".ko") {
-		ko += ".ko"
-	}
-	if _, err := os.Stat(ko); err == nil {
-		xargs = []string{"insmod", ko}
-	}
-	if *IsAlpha {
-		xargs = append(xargs, "alpha=1")
-	}
-	if len(*DynDbg) > 0 {
-		xargs = append(xargs, "dyndbg="+*DynDbg)
-	}
-	test.Run(xargs...)
-}
-
-func rmmods() {
-	test.Run("rmmod", strings.TrimSuffix(*PlatformDriver, ".ko"))
 }
 
 func uutInfo() {

@@ -20,26 +20,26 @@ case $1 in
 	ip link add dummy1 type dummy 2> /dev/null
 	ip link add dummy2 type dummy 2> /dev/null
 	
-	$D_MOVE up CA-1 xeth10 10.1.0.1/24
+	$D_MOVE up CA-1 ${net0port0} 10.1.0.1/24
 	$D_MOVE up CA-1 dummy1 192.168.0.1/32
 	
-	$D_MOVE up RA-1 xeth2 10.1.0.2/24
-	$D_MOVE up RA-1 xeth3 10.2.0.2/24
+	$D_MOVE up RA-1 ${net0port1} 10.1.0.2/24
+	$D_MOVE up RA-1 ${net5port0} 10.2.0.2/24
 	
-	$D_MOVE up RA-2 xeth4 10.2.0.3/24
-	$D_MOVE up RA-2 xeth5 10.3.0.3/24
+	$D_MOVE up RA-2 ${net5port1} 10.2.0.3/24
+	$D_MOVE up RA-2 ${net0port0} 10.3.0.3/24
 	
-	$D_MOVE up CA-2 xeth6  10.3.0.4/24
+	$D_MOVE up CA-2 ${net0port1}  10.3.0.4/24
 	$D_MOVE up CA-2 dummy2 192.168.0.2/32
 
 	;;
     "down")
-	$D_MOVE down CA-1 xeth10
-	$D_MOVE down RA-1 xeth2
-	$D_MOVE down RA-1 xeth3
-	$D_MOVE down RA-2 xeth4
-	$D_MOVE down RA-2 xeth5 
-	$D_MOVE down CA-2 xeth6
+	$D_MOVE down CA-1 ${net0port0}
+	$D_MOVE down RA-1 ${net0port1}
+	$D_MOVE down RA-1 ${net5port0}
+	$D_MOVE down RA-2 ${net5port1}
+	$D_MOVE down RA-2 ${net0port0} 
+	$D_MOVE down CA-2 ${net0port1}
 
 	ip link del dummy1
 	ip link del dummy2	

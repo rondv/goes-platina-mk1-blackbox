@@ -17,12 +17,12 @@ case $1 in
     "up")
 	docker-compose up -d
 
-	$D_MOVE up R1 eth-24-0 
-	$D_MOVE up R2 eth-25-0 192.168.120.10/24
+	$D_MOVE up R1 ${net1port0} 
+	$D_MOVE up R2 ${net1port1} 192.168.120.10/24
 	;;
     "down")
-	$D_MOVE down R1 eth-24-0
-	$D_MOVE down R2 eth-25-0		
+	$D_MOVE down R1 ${net1port0}
+	$D_MOVE down R2 ${net1port1}		
 
 	docker-compose down
 	

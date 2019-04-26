@@ -275,10 +275,13 @@ func (slice sliceStress) Test(t *testing.T) {
 	for _, to := range duration {
 		assert.Comment("stress for", to)
 		_, err := slice.ExecCmd(t, "CB-1",
-			"timeout", to,
+			"timeout", "-s", "KILL", to,
 			"hping3", "--icmp", "--flood", "-q", "10.3.0.4")
 		assert.Comment("verfy can still ping neighbor")
 		_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.1.0.2")
+		if err != nil {
+			assert.Comment("hping3 failed ", to)
+		}
 		assert.Nil(err)
 	}
 }
@@ -313,11 +316,15 @@ func (slice sliceStressPci) Test(t *testing.T) {
 	for _, to := range duration {
 		assert.Comment("stress for", to)
 		_, err := slice.ExecCmd(t, "CB-1",
-			"timeout", to,
+			"timeout", "-s", "KILL", to,
 			"hping3", "--icmp", "--flood", "-q", "-t", "1",
 			"10.3.0.4")
 		assert.Comment("verfy can still ping neighbor")
 		_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.1.0.2")
+		if err != nil {
+			assert.Comment("hping3 failed ", to)
+		}
+
 		assert.Nil(err)
 	}
 }

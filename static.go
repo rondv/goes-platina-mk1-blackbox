@@ -30,7 +30,8 @@ func staticTest(t *testing.T, tmpl string) {
 		staticInterConnectivity{docket},
 		staticFlap{docket},
 		staticInterConnectivity2{docket},
-		staticPuntStress{docket})
+		staticPuntStress{docket},
+		staticBlackhole{docket})
 }
 
 type staticConnectivity struct{ *docker.Docket }
@@ -223,4 +224,68 @@ func (static staticPuntStress) Test(t *testing.T) {
 		assert.Fatalf("iperf3 regex failed to find rate [%v]", out)
 	}
 	<-done
+}
+
+type staticBlackhole struct{ *docker.Docket }
+
+func (staticBlackhole) String() string { return "blackhole" }
+
+func (static staticBlackhole) Test(t *testing.T) {
+	if testing.Short() || *test.DryRun {
+		t.SkipNow()
+	}
+
+	assert := test.Assert{t}
+	assert.Comment("ping from CA-1 to CA-2 before blackhole")
+	assert.Nil(static.PingCmd(t, "CA-1", "10.3.0.4"))
+
+	assert.Comment("Add blackhole /32 route")
+	static.ExecCmd(t, "RA-2", "ip", "route", "add", "blackhole",
+		"10.3.0.4/32")
+	time.Sleep(1 * time.Second)
+
+	assert.Comment("ping should get swallowed by blackhole")
+	assert.NonNil(static.PingCmd(t, "CA-1", "10.3.0.4"))
+
+	assert.Program(regexp.MustCompile("drop"),
+		*Goes, "vnet", "show", "ip", "fib", "table",
+		"RA-2")
+
+	assert.Comment("Remove blackhole route")
+	static.ExecCmd(t, "RA-2", "ip", "route", "del", "blackhole",
+		"10.3.0.4/32")
+	time.Sleep(1 * time.Second)
+
+	assert.Comment("ping should work again")
+	assert.Nil(static.PingCmd(t, "CA-1", "10.3.0.4"))
+
+	assert.Comment("Add blackhole /25 route")
+	static.ExecCmd(t, "RA-2", "ip", "route", "add",
+		"192.168.0.0/24", "via", "10.3.0.4")
+	assert.Comment("ping dummy on CA-2")
+	assert.Nil(static.PingCmd(t, "CA-1", "192.168.0.2"))
+	assert.Program(*Goes, "vnet", "show", "ip", "fib", "table",
+		"RA-2")
+
+	assert.Comment("Add blackhole for dummy")
+	static.ExecCmd(t, "RA-1", "ip", "route", "add",
+		"blackhole", "192.168.0.0/25")
+	time.Sleep(1 * time.Second)
+	assert.Program(regexp.MustCompile("drop"),
+		*Goes, "vnet", "show", "ip", "fib", "table",
+		"RA-1")
+
+	assert.Comment("Now ping should fail")
+	assert.NonNil(static.PingCmd(t, "CA-1", "192.168.0.2"))
+
+	assert.Comment("Remove blackhole for dummy")
+	static.ExecCmd(t, "RA-1", "ip", "route", "del",
+		"blackhole", "192.168.0.0/25")
+	time.Sleep(1 * time.Second)
+	assert.Program(*Goes, "vnet", "show", "ip", "fib", "table",
+		"RA-1")
+
+	assert.Comment("Now ping should work again")
+	assert.Nil(static.PingCmd(t, "CA-1", "192.168.0.2"))
+
 }

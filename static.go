@@ -231,7 +231,7 @@ type staticBlackhole struct{ *docker.Docket }
 func (staticBlackhole) String() string { return "blackhole" }
 
 func (static staticBlackhole) Test(t *testing.T) {
-	if true || testing.Short() || *test.DryRun {
+	if testing.Short() || *test.DryRun {
 		t.SkipNow()
 	}
 

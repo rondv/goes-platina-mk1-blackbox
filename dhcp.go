@@ -85,7 +85,6 @@ func (dhcp dhcpServer) Test(t *testing.T) {
 		found = true
 	}
 	if !found {
-		test.Pause("dhcpd not found")
 		assert.Nil(fmt.Errorf("check dhcpd failed\n"))
 	}
 }

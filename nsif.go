@@ -92,7 +92,6 @@ func (nsif nsifNeighbor) Test(t *testing.T) {
 		time.Sleep(1 * time.Second)
 	}
 	if not_found {
-		test.Pause("Failed")
 		assert.Nil(fmt.Errorf("no neighbor found"))
 	}
 }

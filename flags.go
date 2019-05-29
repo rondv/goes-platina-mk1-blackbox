@@ -19,8 +19,6 @@ var (
 		"GO Embedded System for Platina's Mk1 TOR Switch")
 	PlatformDriver = flag.String("test.platform-driver", "platina-mk1",
 		"Linux Kernel Platform Driver")
-	SingleStep = flag.Bool("test.step", false,
-		"single step (manual testing)")
 	XethStat = flag.Bool("test.xeth-stat", false,
 		"show /sys/kernel/platina-mk1/xeth stats")
 )

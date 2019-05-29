@@ -94,10 +94,7 @@ func (mp pingRemotesP) Test(t *testing.T) {
 			time.Sleep(wait_time)
 		}
 	}
-	if failed {
-		test.Pause("Failed")
-		assert.NonNil(nil)
-	}
+	assert.False(failed)
 }
 
 type removeLastRoute []netport.NetDev
@@ -170,8 +167,5 @@ func (mp removeRoutePingGW) Test(t *testing.T) {
 			time.Sleep(wait_time)
 		}
 	}
-	if failed {
-		test.Pause("Failed")
-		assert.NonNil(nil)
-	}
+	assert.False(failed)
 }

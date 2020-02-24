@@ -10,7 +10,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R1
-    image: platinasystems/frrouting:6.0
+    image: platinasystems/frrouting:7.2.1
     privileged: true
     volumes:
       - ./volumes_1base/R1:/etc/frr
@@ -29,7 +29,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R2
-    image: platinasystems/frrouting:6.0
+    image: platinasystems/frrouting:7.2.1
     privileged: true
     volumes:
       - ./volumes_1base/R2:/etc/frr
@@ -48,7 +48,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R3
-    image: platinasystems/frrouting:6.0
+    image: platinasystems/frrouting:7.2.1
     privileged: true
     volumes:
       - ./volumes_1base/R3:/etc/frr
@@ -67,7 +67,7 @@ services:
       - 5201/tcp
       - 2605/tcp
     hostname: R4
-    image: platinasystems/frrouting:6.0
+    image: platinasystems/frrouting:7.2.1
     privileged: true
     volumes:
       - ./volumes_1base/R4:/etc/frr

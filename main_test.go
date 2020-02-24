@@ -30,7 +30,6 @@ func TestMain(m *testing.M) {
 			showXethStats()
 		}
 		if ecode != 0 {
-			test.Pause()
 			os.Exit(ecode)
 		}
 	}()

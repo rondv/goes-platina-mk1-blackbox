@@ -30,7 +30,6 @@ func TestMain(m *testing.M) {
 			showXethStats()
 		}
 		if ecode != 0 {
-			test.Pause()
 			os.Exit(ecode)
 		}
 	}()
@@ -55,8 +54,7 @@ func TestMain(m *testing.M) {
 			"@redisd",
 			"@redis.reg",
 			"@redis.pub",
-			"@vnet",
-			"@vnetd",
+			"@fe1",
 		} {
 			if bytes.Index(b, []byte(atsock)) < 0 {
 				panic(fmt.Errorf("no %s, is goes running?",
@@ -82,21 +80,30 @@ func Test(t *testing.T) {
 		mayRun(t, "frr", frrNetTest)
 		test.SkipIfDryRun(t)
 	})
-	mayRun(t, "vlan", func(t *testing.T) {
-		mayRun(t, "ping", pingVlanTest)
-		mayRun(t, "dhcp", dhcpVlanTest)
-		mayRun(t, "slice", sliceVlanTest)
-		mayRun(t, "static", staticVlanTest)
-		mayRun(t, "gobgp", gobgpVlanTest)
-		mayRun(t, "bird", birdVlanTest)
-		mayRun(t, "frr", frrVlanTest)
-		test.SkipIfDryRun(t)
-	})
-	mayRun(t, "bridge", func(t *testing.T) {
-		mayRun(t, "ping", pingBridgeTest)
-		test.SkipIfDryRun(t)
-	})
-	mayRun(t, "nsif", nsifTest)
+	t.Log("Skipping vlan tests")
+	if false {
+		mayRun(t, "vlan", func(t *testing.T) {
+			mayRun(t, "ping", pingVlanTest)
+			mayRun(t, "dhcp", dhcpVlanTest)
+			mayRun(t, "slice", sliceVlanTest)
+			mayRun(t, "static", staticVlanTest)
+			mayRun(t, "gobgp", gobgpVlanTest)
+			mayRun(t, "bird", birdVlanTest)
+			mayRun(t, "frr", frrVlanTest)
+			test.SkipIfDryRun(t)
+		})
+	}
+	t.Log("Skipping bridge test")
+	if false {
+		mayRun(t, "bridge", func(t *testing.T) {
+			mayRun(t, "ping", pingBridgeTest)
+			test.SkipIfDryRun(t)
+		})
+	}
+	t.Log("Skipping nsif test")
+	if false {
+		mayRun(t, "nsif", nsifTest)
+	}
 	mayRun(t, "multipath", mpTest)
 	test.SkipIfDryRun(t)
 }
@@ -116,14 +123,6 @@ func uutInfo() {
 	o, err := exec.Command(*Goes, "show", "buildid").Output()
 	if err == nil && len(o) > 0 {
 		fmt.Print(*Goes, ": |\n    buildid/", string(o))
-	}
-	o, err = exec.Command(*Goes, "vnetd", "-path").Output()
-	if err == nil && len(o) > 0 {
-		vnet := string(o[:len(o)-1])
-		o, err = exec.Command(*Goes, "show", "buildid", vnet).Output()
-		if err == nil && len(o) > 0 {
-			fmt.Print(vnet, ": |\n    buildid/", string(o))
-		}
 	}
 	pd := *PlatformDriver
 	ko := pd

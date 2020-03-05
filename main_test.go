@@ -102,9 +102,18 @@ func Test(t *testing.T) {
 	}
 	t.Log("Skipping nsif test")
 	if false {
-		mayRun(t, "nsif", nsifTest)
+		mayRun(t, "nsif", func(t *testing.T) {
+			mayRun(t, "ip4", nsifNetTest)
+			mayRun(t, "ip6", nsifIp6NetTest)
+		})
 	}
-	mayRun(t, "multipath", mpTest)
+	mayRun(t, "net6", func(t *testing.T) {
+		mayRun(t, "ping", pingIp6NetTest)
+	})
+	mayRun(t, "multipath", func(t *testing.T) {
+		mayRun(t, "ip4", mpNetTest)
+		mayRun(t, "ip6", mpNetIp6Test)
+	})
 	test.SkipIfDryRun(t)
 }
 

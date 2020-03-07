@@ -80,19 +80,16 @@ func Test(t *testing.T) {
 		mayRun(t, "frr", frrNetTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Log("Skipping vlan tests")
-	if false {
-		mayRun(t, "vlan", func(t *testing.T) {
-			mayRun(t, "ping", pingVlanTest)
-			mayRun(t, "dhcp", dhcpVlanTest)
-			mayRun(t, "slice", sliceVlanTest)
-			mayRun(t, "static", staticVlanTest)
-			mayRun(t, "gobgp", gobgpVlanTest)
-			mayRun(t, "bird", birdVlanTest)
-			mayRun(t, "frr", frrVlanTest)
-			test.SkipIfDryRun(t)
-		})
-	}
+	mayRun(t, "vlan", func(t *testing.T) {
+		mayRun(t, "ping", pingVlanTest)
+		mayRun(t, "dhcp", dhcpVlanTest)
+		mayRun(t, "slice", sliceVlanTest)
+		mayRun(t, "static", staticVlanTest)
+		mayRun(t, "gobgp", gobgpVlanTest)
+		mayRun(t, "bird", birdVlanTest)
+		mayRun(t, "frr", frrVlanTest)
+		test.SkipIfDryRun(t)
+	})
 	t.Log("Skipping bridge test")
 	if false {
 		mayRun(t, "bridge", func(t *testing.T) {

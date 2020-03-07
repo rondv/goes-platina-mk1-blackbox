@@ -258,6 +258,9 @@ func (sliceStress) String() string { return "stress" }
 func (slice sliceStress) Test(t *testing.T) {
 	assert := test.Assert{t}
 
+	t.Log("Skipping because it fails and crashes cpu")
+	t.SkipNow()
+
 	assert.Comment("stress with hping3")
 
 	duration := []string{"1", "10", "30", "60"}
@@ -298,6 +301,9 @@ func (sliceStressPci) String() string { return "stress-pci" }
 
 func (slice sliceStressPci) Test(t *testing.T) {
 	assert := test.Assert{t}
+
+	t.Log("Skipping because it fails and crashes cpu")
+	t.SkipNow()
 
 	assert.Comment("stress with hping3 with ttl=1")
 

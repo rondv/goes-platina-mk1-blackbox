@@ -1,0 +1,35 @@
+volume: "/testdata/net/static_v6/"
+mapping: "/etc/frr"
+routers:
+- hostname: CA-1
+  image: "platinasystems/frrouting:6.0"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:1::1/64
+  - name: dummy0
+    address: 2001:db8:0:0::1/128
+- hostname: RA-1
+  image: "platinasystems/frrouting:6.0"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:1::2/64
+  - name: {{index . "net1port0"}}
+    address: 2001:db8:0:2::2/64
+- hostname: RA-2
+  image: "platinasystems/frrouting:6.0"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net1port1"}}
+    address: 2001:db8:0:2::3/64
+  - name: {{index . "net2port0"}}
+    address: 2001:db8:0:3::3/64
+- hostname: CA-2
+  image: "platinasystems/frrouting:6.0"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net2port1"}}
+    address: 2001:db8:0:3::4/64
+  - name: dummy0
+    address: 2001:db8:0:0::2/128

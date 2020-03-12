@@ -120,19 +120,16 @@ func (staticV6InterConnectivity) String() string { return "inter-connectivity" }
 func (staticV6 staticV6InterConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("stop")
+	test.Pause.Prompt("conditional pause")
 
 	for _, x := range []struct {
 		hostname string
 		target   string
 	}{
-		{"CA-1", "2001:db8:0:1::2"},
-		{"CA-1", "2001:db8:0:2::2"},
-		// {"CA-1", "2001:db8:0:3::2"},
-		// {"CA-1", "2001:db8:0:3::4"},
-		// {"CA-1", "2001:db8:0:0::2"},
-		// {"CA-2", "2001:db8:0:1::1"},
-		// {"CA-2", "2001:db8:0:0::1"},
+		{"CA-1", "2001:db8:0:3::4"},
+		{"CA-1", "2001:db8:0:0::2"},
+		{"CA-2", "2001:db8:0:1::1"},
+		{"CA-2", "2001:db8:0:0::1"},
 	} {
 		assert.Comment("ping from", x.hostname, "to", x.target)
 		assert.Nil(staticV6.PingCmd(t, x.hostname, x.target))
@@ -196,10 +193,10 @@ func (staticV6 staticV6InterConnectivity2) Test(t *testing.T) {
 		{"RA-2", "2001:db8:0:3::4"},
 		{"RA-2", "2001:db8:0:0::2"},
 		{"CA-2", "2001:db8:0:3::3"},
-		// {"CA-1", "2001:db8:0:3::4"},
-		// {"CA-1", "2001:db8:0:0::2"},
-		// {"CA-2", "2001:db8:0:1::1"},
-		// {"CA-2", "2001:db8:0:0::1"},
+		{"CA-1", "2001:db8:0:3::4"},
+		{"CA-1", "2001:db8:0:0::2"},
+		{"CA-2", "2001:db8:0:1::1"},
+		{"CA-2", "2001:db8:0:0::1"},
 	} {
 		assert.Comment("ping from", x.hostname, "to", x.target)
 		assert.Nil(staticV6.PingCmd(t, x.hostname, x.target))
@@ -217,10 +214,6 @@ func (staticV6 staticV6PuntStress) Test(t *testing.T) {
 	if testing.Short() || *test.DryRun {
 		t.SkipNow()
 	}
-
-	// FIXME, skipping because it fails and crashes box
-	t.Log("Skipping because it fails and crashes cpu")
-	t.SkipNow()
 
 	assert := test.Assert{t}
 	assert.Comment("Check punt stress with iperf3")
@@ -256,16 +249,14 @@ func (staticV6 staticV6Blackhole) Test(t *testing.T) {
 	if testing.Short() || *test.DryRun {
 		t.SkipNow()
 	}
-	t.Log("Skipping")
-	t.SkipNow()
 
 	assert := test.Assert{t}
 	assert.Comment("ping from CA-1 to CA-2 before blackhole")
 	assert.Nil(staticV6.PingCmd(t, "CA-1", "2001:db8:0:3::4"))
 
-	assert.Comment("Add blackhole /32 route")
+	assert.Comment("Add blackhole /128 route")
 	staticV6.ExecCmd(t, "RA-2", "ip", "-6", "route", "add", "blackhole",
-		"2001:db8:0:3::4/32")
+		"2001:db8:0:3::4/128")
 	time.Sleep(1 * time.Second)
 
 	assert.Comment("ping should get swallowed by blackhole")
@@ -278,15 +269,15 @@ func (staticV6 staticV6Blackhole) Test(t *testing.T) {
 
 	assert.Comment("Remove blackhole route")
 	staticV6.ExecCmd(t, "RA-2", "ip", "-6", "route", "del", "blackhole",
-		"2001:db8:0:3::4/32")
+		"2001:db8:0:3::4/128")
 	time.Sleep(1 * time.Second)
 
 	assert.Comment("ping should work again")
 	assert.Nil(staticV6.PingCmd(t, "CA-1", "2001:db8:0:3::4"))
 
-	assert.Comment("Add blackhole /25 route")
+	assert.Comment("Add blackhole route to dummy")
 	staticV6.ExecCmd(t, "RA-2", "ip", "route", "add",
-		"2001:db8:0:0::0/24", "via", "2001:db8:0:3::4")
+		"2001:db8:0:0::/64", "via", "2001:db8:0:3::4")
 	assert.Comment("ping dummy on CA-2")
 	assert.Nil(staticV6.PingCmd(t, "CA-1", "2001:db8:0:0::2"))
 	//FIXME
@@ -295,7 +286,7 @@ func (staticV6 staticV6Blackhole) Test(t *testing.T) {
 
 	assert.Comment("Add blackhole for dummy")
 	staticV6.ExecCmd(t, "RA-1", "ip", "-6", "route", "add",
-		"blackhole", "2001:db8:0:0::0/25")
+		"blackhole", "2001:db8:0:0::/64")
 	time.Sleep(1 * time.Second)
 	//FIXME
 	//assert.Program(regexp.MustCompile("drop"),
@@ -307,7 +298,7 @@ func (staticV6 staticV6Blackhole) Test(t *testing.T) {
 
 	assert.Comment("Remove blackhole for dummy")
 	staticV6.ExecCmd(t, "RA-1", "ip", "-6", "route", "del",
-		"blackhole", "2001:db8:0:0::0/25")
+		"blackhole", "2001:db8:0:0::/64")
 	time.Sleep(1 * time.Second)
 	//FIXME
 	//assert.Program(*Goes, "vnet", "show", "ip", "fib", "table",

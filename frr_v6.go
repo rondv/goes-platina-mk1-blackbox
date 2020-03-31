@@ -35,6 +35,7 @@ func frrV6BgpTest(t *testing.T, tmpl string) {
 	docket.Test(t,
 		frrV6BgpConnectivity{docket},
 		frrV6BgpDaemons{docket},
+		frrV6BgpBfd{docket},
 		frrV6BgpNeighbors{docket},
 		frrV6BgpRoutes{docket},
 		frrV6BgpInterConnectivity{docket},
@@ -126,6 +127,33 @@ func (frr frrV6BgpDaemons) Test(t *testing.T) {
 		assert.Nil(err)
 		assert.Match(out, ".*bgpd.*")
 		assert.Match(out, ".*zebra.*")
+	}
+}
+
+type frrV6BgpBfd struct{ *docker.Docket }
+
+func (frrV6BgpBfd) String() string { return "bfd" }
+
+func (frr frrV6BgpBfd) Test(t *testing.T) {
+	assert := test.Assert{t}
+
+	for _, x := range []struct {
+		hostname string
+		peer     string
+	}{
+		{"R1", "2001:db8:0:120::10"},
+		{"R1", "2001:db8:0:150::4"},
+		{"R2", "2001:db8:0:120::5"},
+		{"R2", "2001:db8:0:222::2"},
+		{"R3", "2001:db8:0:222::10"},
+		{"R3", "2001:db8:0:111::4"},
+		{"R4", "2001:db8:0:111::2"},
+		{"R4", "2001:db8:0:150::5"},
+	} {
+		out, err := frr.ExecCmd(t, x.hostname,
+			"vtysh", "-c", "show bfd peer "+x.peer)
+		assert.Nil(err)
+		assert.Match(out, ".*Status: up.*")
 	}
 }
 

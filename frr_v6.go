@@ -23,11 +23,11 @@ func frrVlanV6Test(t *testing.T) {
 }
 
 func frrNetV6BgpTest(t *testing.T) {
-	frrBgpTest(t, "testdata/frr6/bgp/conf.yaml.tmpl")
+	frrV6BgpTest(t, "testdata/frr6/bgp/conf.yaml.tmpl")
 }
 
 func frrVlanV6BgpTest(t *testing.T) {
-	frrBgpTest(t, "testdata/frr6/bgp/vlan/conf.yaml.tmpl")
+	frrV6BgpTest(t, "testdata/frr6/bgp/vlan/conf.yaml.tmpl")
 }
 
 func frrV6BgpTest(t *testing.T, tmpl string) {
@@ -95,6 +95,7 @@ func (frrV6BgpConnectivity) String() string { return "connectivity" }
 func (frr frrV6BgpConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
+	test.Pause.Prompt("Stop")
 	for _, x := range []struct {
 		host   string
 		target string
@@ -192,7 +193,7 @@ func (frr frrV6BgpRoutes) Test(t *testing.T) {
 		timeout := 60
 		for i := timeout; i > 0; i-- {
 			out, err := frr.ExecCmd(t, x.hostname,
-				"ip", "route", "show", x.route)
+				"ip", "-6", "route", "show", x.route)
 			assert.Nil(err)
 			if !assert.MatchNonFatal(out, x.route) {
 				time.Sleep(1 * time.Second)
@@ -229,7 +230,7 @@ func (frr frrV6BgpInterConnectivity) Test(t *testing.T) {
 	} {
 		err := frr.PingCmd(t, x.hostname, x.target)
 		assert.Nil(err)
-		assert.Program(*Goes, "fe1", "switch", "fib")
+		assert.Program(*Goes, "fe1", "switch", "fib", "ip6")
 	}
 }
 
@@ -260,7 +261,7 @@ func (frr frrV6BgpFlap) Test(t *testing.T) {
 				"ip", "link", "set", "up", intf)
 			assert.Nil(err)
 			time.Sleep(1 * time.Second)
-			assert.Program(*Goes, "fe1", "switch", "fib")
+			assert.Program(*Goes, "fe1", "switch", "fib", "ip6")
 		}
 	}
 }
@@ -373,6 +374,9 @@ func (frr frrV6OspfConfig) Test(t *testing.T) {
 			assert.Nil(err)
 			_, err = frr.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t", "-c", "router ospf6", "-c", "interface "+intf+" area 0.0.0.0")
+			assert.Nil(err)
+			_, err = frr.ExecCmd(t, r.Hostname,
+				"vtysh", "-c", "conf t", "-c", "router ospf6", "-c", "redistribute connected")
 			assert.Nil(err)
 		}
 	}
@@ -707,7 +711,7 @@ func (frr frrV6IsisInterConnectivity) Test(t *testing.T) {
 		{"R4", "2001:db8:0:222::10"},
 	} {
 		assert.Nil(frr.PingCmd(t, x.hostname, x.target))
-		assert.Program(*Goes, "fe1", "switch", "fib")
+		assert.Program(*Goes, "fe1", "switch", "fib", "ip6")
 	}
 }
 
@@ -738,7 +742,7 @@ func (frr frrV6IsisFlap) Test(t *testing.T) {
 				"ip", "link", "set", "up", intf)
 			assert.Nil(err)
 			time.Sleep(1 * time.Second)
-			assert.Program(*Goes, "fe1", "switch", "fib")
+			assert.Program(*Goes, "fe1", "switch", "fib", "ip6")
 		}
 	}
 }

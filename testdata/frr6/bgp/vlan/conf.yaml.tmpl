@@ -1,0 +1,55 @@
+volume: "/testdata/frr6/bgp/"
+mapping: "/etc/frr"
+routers:
+- hostname: R1
+  image: "platinasystems/frrouting:7.2.1"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:120::5/64
+    vlan: 10
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:150::5/64
+    vlan: 40
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:50::5/64
+    vlan: 50
+- hostname: R2
+  image: "platinasystems/frrouting:7.2.1"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:120::10/64
+    vlan: 10
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:222::10/64
+    vlan: 20
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:60::10/64
+    vlan: 60
+- hostname: R3
+  image: "platinasystems/frrouting:7.2.1"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:111::2/64
+    vlan: 30
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:222::2/64
+    vlan: 20
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:50::2/64
+    vlan: 50
+- hostname: R4
+  image: "platinasystems/frrouting:7.2.1"
+  cmd: "/root/startup.sh"
+  intfs:
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:111::4/64
+    vlan: 30
+  - name: {{index . "net0port0"}}
+    address: 2001:db8:0:150::4/64
+    vlan: 40
+  - name: {{index . "net0port1"}}
+    address: 2001:db8:0:60::4/64
+    vlan: 60

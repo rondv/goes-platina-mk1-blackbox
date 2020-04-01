@@ -580,6 +580,8 @@ func (frrV6IsisConnectivity) String() string { return "connectivity" }
 func (frr frrV6IsisConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
+	test.Pause.Prompt("Stop")
+
 	for _, x := range []struct {
 		host   string
 		target string
@@ -632,7 +634,7 @@ func (frr frrV6IsisAddIntfConf) Test(t *testing.T) {
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t",
 				"-c", "interface "+intf,
-				"-c", "ip router isis "+r.Hostname)
+				"-c", "ipv6 router isis "+r.Hostname)
 			assert.Nil(err)
 		}
 	}
@@ -645,19 +647,20 @@ func (frrV6IsisNeighbors) String() string { return "neighbors" }
 func (frr frrV6IsisNeighbors) Test(t *testing.T) {
 	assert := test.Assert{t}
 
+	test.Pause.Prompt("stop")
+
 	for _, x := range []struct {
 		hostname string
 		peer     string
-		address  string
 	}{
-		{"R1", "R2", "2001:db8:0:120::10"},
-		{"R1", "R4", "2001:db8:0:150::4"},
-		{"R2", "R1", "2001:db8:0:120::5"},
-		{"R2", "R3", "2001:db8:0:222::2"},
-		{"R3", "R2", "2001:db8:0:222::10"},
-		{"R3", "R4", "2001:db8:0:111::4"},
-		{"R4", "R3", "2001:db8:0:111::2"},
-		{"R4", "R1", "2001:db8:0:150::5"},
+		{"R1", "R2"},
+		{"R1", "R4"},
+		{"R2", "R1"},
+		{"R2", "R3"},
+		{"R3", "R2"},
+		{"R3", "R4"},
+		{"R4", "R3"},
+		{"R4", "R1"},
 	} {
 		timeout := 60
 		found := false
@@ -665,7 +668,7 @@ func (frr frrV6IsisNeighbors) Test(t *testing.T) {
 			out, err := frr.ExecCmd(t, x.hostname,
 				"vtysh", "-c", "show isis neighbor "+x.peer)
 			assert.Nil(err)
-			if !assert.MatchNonFatal(out, x.address) {
+			if !assert.MatchNonFatal(out, "State: Up") {
 				time.Sleep(1 * time.Second)
 			} else {
 				found = true
@@ -703,7 +706,7 @@ func (frr frrV6IsisRoutes) Test(t *testing.T) {
 		timeout := 60
 		for i := timeout; i > 0; i-- {
 			out, err := frr.ExecCmd(t, x.hostname,
-				"vtysh", "-c", "show ip route isis")
+				"vtysh", "-c", "show ipv6 route isis")
 			assert.Nil(err)
 			if !assert.MatchNonFatal(out, x.route) {
 				time.Sleep(1 * time.Second)

@@ -57,6 +57,10 @@ func (dhcp dhcpConnectivity) Test(t *testing.T) {
 		//assert.Program(*Goes, "vnet", "show", "ip", "fib", "table",
 		//	x.host)
 	}
+
+	// enable dhcpd for IPv4
+	_, err := dhcp.ExecCmd(t, "R2", "supervisorctl", "start", "dhcpd4")
+	assert.Nil(err)
 }
 
 type dhcpServer struct{ *docker.Docket }
@@ -66,6 +70,7 @@ func (dhcpServer) String() string { return "server" }
 func (dhcp dhcpServer) Test(t *testing.T) {
 	assert := test.Assert{t}
 
+	test.Pause.Prompt("Stop")
 	assert.Comment("Checking dhcp server on", "R2")
 	time.Sleep(1 * time.Second)
 	out, err := dhcp.ExecCmd(t, "R2", "ps", "ax")

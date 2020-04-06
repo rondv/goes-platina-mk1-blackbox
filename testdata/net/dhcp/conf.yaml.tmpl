@@ -1,12 +1,12 @@
 routers:
 - hostname: R1
-  image: "stigt/debian-dhcpc:latest"
+  image: "platinasystems/debian-dhcp:0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port1"}}
     address: 192.168.120.5/24
 - hostname: R2
-  image: "stigt/debian-dhcps:latest"
+  image: "platinasystems/debian-dhcp:0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port0"}}

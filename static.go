@@ -206,10 +206,6 @@ func (static staticPuntStress) Test(t *testing.T) {
 		t.SkipNow()
 	}
 
-	//FIXME, skipping because it fails and crashes box
-	t.Log("Skipping because it fails and crashes cpu")
-	t.SkipNow()
-
 	assert := test.Assert{t}
 	assert.Comment("Check punt stress with iperf3")
 

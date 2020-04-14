@@ -110,11 +110,13 @@ func Test(t *testing.T) {
 		mayRun(t, "ospf", frrNetV6OspfTest)
 		mayRun(t, "bgp", frrNetV6BgpTest)
 		mayRun(t, "isis", frrNetV6IsisTest)
+		mayRun(t, "dhcp", dhcpNetV6Test)
 	})
 	mayRun(t, "vlan6", func(t *testing.T) {
 		mayRun(t, "static", staticV6VlanTest)
 		mayRun(t, "bgp", frrVlanV6BgpTest)
 		mayRun(t, "isis", frrVlanV6IsisTest)
+		mayRun(t, "dhcp", dhcpVlanV6Test)
 	})
 	mayRun(t, "multipath", func(t *testing.T) {
 		mayRun(t, "ip4", mpNetTest)

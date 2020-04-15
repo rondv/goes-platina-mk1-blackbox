@@ -5,7 +5,10 @@
 package main
 
 import (
+	"fmt"
+	"os/exec"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -251,6 +254,59 @@ func (slice sliceIsolation) Test(t *testing.T) {
 
 }
 
+func getCpuTemp() (val string, err error) {
+	var (
+		out    []byte
+		re     *regexp.Regexp
+		result []string
+	)
+
+	out, _ = exec.Command(*Goes, "hget", "platina-mk1", "temp").Output()
+	re, _ = regexp.Compile(`sys.cpu.coretemp.C:\s+(\d+)`)
+	result = re.FindStringSubmatch(string(out))
+	if len(result) == 2 {
+		val = result[1]
+	} else {
+		err = fmt.Errorf("temp regex failed [%v]\n", string(out))
+	}
+	return
+}
+
+func getIpv6Ll() (val string, err error) {
+	var (
+		out    []byte
+		re     *regexp.Regexp
+		result []string
+	)
+
+	out, _ = exec.Command(*Goes, "mac-ll").Output()
+	re, _ = regexp.Compile(`IPv6 link-local:\s+([a-f0-9:]+)`)
+	result = re.FindStringSubmatch(string(out))
+	if len(result) == 2 {
+		val = result[1] + "%eth0" // TODO fix non eth0 management
+	} else {
+		err = fmt.Errorf("mac-ll regex failed [%v]\n", string(out))
+	}
+
+	return
+}
+
+func getFanRpm() (rpm string, err error) {
+	var (
+		out     []byte
+		lladdr6 string
+	)
+
+	lladdr6, _ = getIpv6Ll()
+
+	out, _ = exec.Command("redis-cli", "--raw", "-h", lladdr6, "hget", "platina-mk1-bmc",
+		"fan_tray.1.1.speed.units.rpm").Output()
+	rpm = string(out)
+	rpm = strings.TrimSuffix(rpm, "\n")
+
+	return
+}
+
 type sliceStress struct{ *docker.Docket }
 
 func (sliceStress) String() string { return "stress" }
@@ -259,6 +315,19 @@ func (slice sliceStress) Test(t *testing.T) {
 	assert := test.Assert{t}
 
 	assert.Comment("stress with hping3")
+
+	// 1st check temp and fan speed
+	// and compare at the end
+	var (
+		temp [6]string
+		rpm  [6]string
+		err  error
+	)
+
+	temp[0], err = getCpuTemp()
+	assert.Nil(err)
+	rpm[0], err = getFanRpm()
+	assert.Nil(err)
 
 	duration := []string{"1", "10", "30", "60"}
 
@@ -278,7 +347,7 @@ func (slice sliceStress) Test(t *testing.T) {
 		t.Error("ping failing before stress test")
 	}
 
-	for _, to := range duration {
+	for i, to := range duration {
 		assert.Comment("stress for", to)
 		_, err := slice.ExecCmd(t, "CB-1",
 			"timeout", "-s", "KILL", to,
@@ -289,7 +358,23 @@ func (slice sliceStress) Test(t *testing.T) {
 			assert.Comment("hping3 failed ", to)
 		}
 		assert.Nil(err)
+
+		temp[i+1], err = getCpuTemp()
+		assert.Nil(err)
+		rpm[i+1], err = getFanRpm()
+		assert.Nil(err)
 	}
+
+	temp[5], err = getCpuTemp()
+	assert.Nil(err)
+	rpm[5], err = getFanRpm()
+	assert.Nil(err)
+
+	assert.Commentf("Temp %vC, Fan %v before stress\n", temp[0], rpm[0])
+	for i := 0; i <= 3; i++ {
+		assert.Commentf("Temp %vC, Fan %v after %v stress\n", temp[i], rpm[i], duration[i])
+	}
+	assert.Commentf("Temp %vC, Fan %v after stress\n", temp[5], rpm[5])
 }
 
 type sliceStressPci struct{ *docker.Docket }

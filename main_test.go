@@ -71,7 +71,7 @@ func TestMain(m *testing.M) {
 }
 
 func Test(t *testing.T) {
-	mayRun(t, "net", func(t *testing.T) {
+	mayRun(t, "net4", func(t *testing.T) {
 		mayRun(t, "ping", pingNetTest)
 		mayRun(t, "dhcp", dhcpNetTest)
 		mayRun(t, "static", staticNetTest)
@@ -80,7 +80,7 @@ func Test(t *testing.T) {
 		mayRun(t, "frr", frrNetTest)
 		test.SkipIfDryRun(t)
 	})
-	mayRun(t, "vlan", func(t *testing.T) {
+	mayRun(t, "vlan4", func(t *testing.T) {
 		mayRun(t, "ping", pingVlanTest)
 		mayRun(t, "dhcp", dhcpVlanTest)
 		mayRun(t, "slice", sliceVlanTest)

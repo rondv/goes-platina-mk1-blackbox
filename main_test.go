@@ -90,13 +90,10 @@ func Test(t *testing.T) {
 		mayRun(t, "frr", frrVlanTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Log("Skipping bridge test")
-	if false {
-		mayRun(t, "bridge", func(t *testing.T) {
-			mayRun(t, "ping", pingBridgeTest)
-			test.SkipIfDryRun(t)
-		})
-	}
+	mayRun(t, "bridge", func(t *testing.T) {
+		mayRun(t, "ping", pingBridgeTest)
+		test.SkipIfDryRun(t)
+	})
 	t.Log("Skipping nsif test")
 	if false {
 		mayRun(t, "nsif", func(t *testing.T) {

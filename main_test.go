@@ -122,6 +122,10 @@ func Test(t *testing.T) {
 		mayRun(t, "ip4", mpNetTest)
 		mayRun(t, "ip6", mpNetIp6Test)
 	})
+	mayRun(t, "routes", func(t *testing.T) {
+		mayRun(t, "connective", routesNetTest)
+	})
+
 	test.SkipIfDryRun(t)
 }
 

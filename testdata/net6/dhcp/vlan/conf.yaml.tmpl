@@ -4,10 +4,12 @@ routers:
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
-    address: 2001:db8:0:120::5/64
+    address:
+      - 2001:db8:0:120::5/64
 - hostname: R2
   image: "platinasystems/debian-dhcp:0.2"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}
-    address: 2001:db8:0:120::10/64
+    address:
+      - 2001:db8:0:120::10/64

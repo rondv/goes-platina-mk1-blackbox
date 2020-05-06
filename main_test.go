@@ -105,7 +105,6 @@ func Test(t *testing.T) {
 		})
 	}
 	mayRun(t, "net6", func(t *testing.T) {
-		mayRun(t, "ping", pingIp6NetTest)
 		mayRun(t, "static", staticV6NetTest)
 		mayRun(t, "ospf", frrNetV6OspfTest)
 		mayRun(t, "bgp", frrNetV6BgpTest)

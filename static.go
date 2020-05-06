@@ -18,9 +18,6 @@ func staticNetTest(t *testing.T) {
 }
 
 func staticVlanTest(t *testing.T) {
-	t.Log("Skipping for now")
-	t.SkipNow()
-
 	staticTest(t, "testdata/net/static/vlan/conf.yaml.tmpl")
 }
 

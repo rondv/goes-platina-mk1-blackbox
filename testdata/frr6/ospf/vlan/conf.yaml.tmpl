@@ -1,8 +1,8 @@
-volume: "/testdata/frr/ospf/"
+volume: "/testdata/frr6/ospf/"
 mapping: "/etc/frr"
 routers:
 - hostname: R1
-  image: "platinasystems/frrouting:6.0"
+  image: "platinasystems/frrouting:7.2.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
@@ -18,7 +18,7 @@ routers:
       - 2001:db8:0:50::5/64
     vlan: 50
 - hostname: R2
-  image: "platinasystems/frrouting:6.0"
+  image: "platinasystems/frrouting:7.2.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}
@@ -34,7 +34,7 @@ routers:
       - 2001:db8:0:60::10/64
     vlan: 60
 - hostname: R3
-  image: "platinasystems/frrouting:6.0"
+  image: "platinasystems/frrouting:7.2.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
@@ -50,7 +50,7 @@ routers:
       - 2001:db8:0:50::2/64
     vlan: 50
 - hostname: R4
-  image: "platinasystems/frrouting:6.0"
+  image: "platinasystems/frrouting:7.2.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}

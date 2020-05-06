@@ -86,6 +86,10 @@ func (list pingFlood) Test(t *testing.T) {
 	assert := test.Assert{t}
 	nd := []netport.NetDev(list)[0]
 	ns := nd.Netns
+
+	if len(nd.Routes) == 0 {
+		return
+	}
 	gw := nd.Routes[0].GW
 	dur := time.Duration(*Flood) * time.Second
 	assert.Ping(ns, gw)

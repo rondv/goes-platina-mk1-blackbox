@@ -31,7 +31,8 @@ func staticTest(t *testing.T, tmpl string) {
 		staticFlap{docket},
 		staticInterConnectivity2{docket},
 		staticPuntStress{docket},
-		staticBlackhole{docket})
+		staticBlackhole{docket},
+		staticAdminDown{docket})
 }
 
 type staticConnectivity struct{ *docker.Docket }
@@ -294,5 +295,34 @@ func (static staticBlackhole) Test(t *testing.T) {
 
 	assert.Comment("Now ping should work again")
 	assert.Nil(static.PingCmd(t, "CA-1", "192.168.0.2"))
+
+}
+
+type staticAdminDown struct{ *docker.Docket }
+
+func (staticAdminDown) String() string { return "admin down" }
+
+func (static staticAdminDown) Test(t *testing.T) {
+	if testing.Short() || *test.DryRun {
+		t.SkipNow()
+	}
+
+	assert := test.Assert{t}
+	num_intf := 0
+	for _, r := range static.Routers {
+		for _, i := range r.Intfs {
+			var intf string
+			if i.Vlan != "" {
+				intf = i.Name + "." + i.Vlan
+			} else {
+				intf = i.Name
+			}
+			_, err := static.ExecCmd(t, r.Hostname,
+				"ip", "link", "set", "down", intf)
+			assert.Nil(err)
+			num_intf++
+		}
+	}
+	AssertNoAdjacencies(t)
 
 }

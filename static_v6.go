@@ -31,7 +31,8 @@ func staticV6Test(t *testing.T, tmpl string) {
 		staticV6Flap{docket},
 		staticV6InterConnectivity2{docket},
 		staticV6PuntStress{docket},
-		staticV6Blackhole{docket})
+		staticV6Blackhole{docket},
+		staticV6AdminDown{docket})
 }
 
 type staticV6Connectivity struct{ *docker.Docket }
@@ -306,4 +307,33 @@ func (staticV6 staticV6Blackhole) Test(t *testing.T) {
 
 	assert.Comment("Now ping should work again")
 	//assert.Nil(staticV6.PingCmd(t, "CA-1", "2001:db8:0:0::2"))
+}
+
+type staticV6AdminDown struct{ *docker.Docket }
+
+func (staticV6AdminDown) String() string { return "admin down" }
+
+func (staticV6 staticV6AdminDown) Test(t *testing.T) {
+	if testing.Short() || *test.DryRun {
+		t.SkipNow()
+	}
+
+	assert := test.Assert{t}
+	num_intf := 0
+	for _, r := range staticV6.Routers {
+		for _, i := range r.Intfs {
+			var intf string
+			if i.Vlan != "" {
+				intf = i.Name + "." + i.Vlan
+			} else {
+				intf = i.Name
+			}
+			_, err := staticV6.ExecCmd(t, r.Hostname,
+				"ip", "link", "set", "down", intf)
+			assert.Nil(err)
+			num_intf++
+		}
+	}
+	AssertNoAdjacencies(t)
+
 }

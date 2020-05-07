@@ -22,9 +22,6 @@ func gobgpNetTest(t *testing.T) {
 }
 
 func gobgpVlanTest(t *testing.T) {
-	t.Log("Skipping for now")
-	t.SkipNow()
-
 	if testing.Short() {
 		t.SkipNow()
 	}

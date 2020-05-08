@@ -102,6 +102,7 @@ func Test(t *testing.T) {
 		})
 	}
 	mayRun(t, "net6", func(t *testing.T) {
+		mayRun(t, "ping", pingIp6NetTest)
 		mayRun(t, "static", staticV6NetTest)
 		mayRun(t, "ospf", frrNetV6OspfTest)
 		mayRun(t, "bgp", frrNetV6BgpTest)
@@ -109,6 +110,7 @@ func Test(t *testing.T) {
 		mayRun(t, "dhcp", dhcpNetV6Test)
 	})
 	mayRun(t, "vlan6", func(t *testing.T) {
+		mayRun(t, "ping", pingIp6VlanTest)
 		mayRun(t, "static", staticV6VlanTest)
 		mayRun(t, "ospf", frrVlanV6OspfTest)
 		mayRun(t, "bgp", frrVlanV6BgpTest)

@@ -1,36 +1,37 @@
-# HEADER
-FROM        debian:jessie
-MAINTAINER  stigt
+FROM debian:stretch AS compile-image
+MAINTAINER stigt
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    arping \
-    hping3 \
-    init-system-helpers \
-    iputils-ping \
-    iperf3 \
-    iproute \
-    libc-ares2 \
-    libjson-c2 \
-    logrotate \
-    net-tools \
-    supervisor \    
-    telnet \
-    tcpdump \    
-    traceroute\
-    vim     
+RUN apt-get update && apt-get install -y --no-install-recommends wget build-essential flex bison libncurses-dev libreadline-dev git
 
 WORKDIR /root
+RUN wget ftp://bird.network.cz/pub/bird/bird-2.0.7.tar.gz
+RUN tar zxvf bird-2.0.7.tar.gz
+WORKDIR /root/bird-2.0.7
+RUN ./configure --prefix=/usr --sysconfdir=/etc --runstatedir=/run
+RUN make
 
-ADD         startup.sh /root/startup.sh
+FROM debian:stretch
 
-ADD         supervisord.conf /etc/supervisord.conf
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	arping \
+	wget \
+	tcpdump \
+	hping3 \
+	procps \
+	iproute \
+	iputils-ping \
+	net-tools \
+	traceroute \
+	supervisor \
+	vim
 
-# add BIRD routing daemon and client
-ADD bird /root/bird
-ADD birdc /root/birdc
-ADD birdcl /root/birdcl
+WORKDIR /root
+ADD startup.sh /root/startup.sh
+ADD supervisord.conf /etc/supervisord.conf
+COPY --from=compile-image /root/bird-2.0.7/bird .
+COPY --from=compile-image /root/bird-2.0.7/birdc .
+COPY --from=compile-image /root/bird-2.0.7/birdcl .
 
-# Configuration files
 VOLUME /etc/bird
 
 # Expose ports

@@ -2,7 +2,7 @@ volume: "/testdata/bird/ospf/"
 mapping: "/etc/bird"
 routers:
 - hostname: R1
-  image: "platinasystems/bird:v2.0.2"
+  image: "platinasystems/bird2:v0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
@@ -18,7 +18,7 @@ routers:
       - 192.168.150.5/24
     vlan: 50
 - hostname: R2
-  image: "platinasystems/bird:v2.0.2"
+  image: "platinasystems/bird2:v0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}
@@ -34,7 +34,7 @@ routers:
       - 192.168.60.10/24
     vlan: 60
 - hostname: R3
-  image: "platinasystems/bird:v2.0.2"
+  image: "platinasystems/bird2:v0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port0"}}
@@ -50,7 +50,7 @@ routers:
       - 192.168.50.2/24
     vlan: 50
 - hostname: R4
-  image: "platinasystems/bird:v2.0.2"
+  image: "platinasystems/bird2:v0.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net0port1"}}

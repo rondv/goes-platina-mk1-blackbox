@@ -30,11 +30,9 @@ func sliceV6Test(t *testing.T, tmpl string) {
 		sliceV6Routes{docket},
 		sliceV6InterConnectivity{docket},
 		sliceV6Isolation{docket},
-		sliceV6Stress{docket},
 		sliceV6Connectivity{docket},
 		sliceV6Routes{docket},
 		sliceV6InterConnectivity{docket},
-		sliceV6StressPci{docket},
 		sliceV6Connectivity{docket},
 		sliceV6Routes{docket},
 		sliceV6InterConnectivity{docket})
@@ -330,91 +328,4 @@ func (slice sliceV6Isolation) Test(t *testing.T) {
 		assert.Nil(err)
 	}
 
-}
-
-type sliceV6Stress struct{ *docker.Docket }
-
-func (sliceV6Stress) String() string { return "stress" }
-
-func (slice sliceV6Stress) Test(t *testing.T) {
-	assert := test.Assert{t}
-
-	assert.Comment("stress with hping3")
-
-	duration := []string{"1", "10", "30", "60"}
-
-	ok := false
-	timeout := 120
-	for i := timeout; i > 0; i-- {
-		out, _ := slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:3::4")
-		if !assert.MatchNonFatal(out, "1 received") {
-			time.Sleep(1 * time.Second)
-		} else {
-			ok = true
-			assert.Comment("ping6 ok before stress")
-			break
-		}
-	}
-	if !ok {
-		t.Error("ping6 failing before stress test")
-	}
-
-	for _, to := range duration {
-		assert.Comment("stress for", to)
-		_, err := slice.ExecCmd(t, "CB-1",
-			"timeout", "-s", "KILL", to,
-			"hping3", "--icmp", "--flood", "-q", "2001:db8:0:3::4")
-		assert.Comment("verfy can still ping6 neighbor")
-		_, err = slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:1::2")
-		if err != nil {
-			assert.Comment("hping3 failed ", to)
-		}
-		assert.Nil(err)
-	}
-}
-
-type sliceV6StressPci struct{ *docker.Docket }
-
-func (sliceV6StressPci) String() string { return "stress-pci" }
-
-func (slice sliceV6StressPci) Test(t *testing.T) {
-	assert := test.Assert{t}
-
-	t.Log("Skipping6 because it fails and crashes cpu")
-	t.SkipNow()
-
-	assert.Comment("stress with hping3 with ttl=1")
-
-	duration := []string{"1", "10", "30", "60"}
-
-	ok := false
-	timeout := 120
-	for i := timeout; i > 0; i-- {
-		out, _ := slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:3::4")
-		if !assert.MatchNonFatal(out, "1 received") {
-			time.Sleep(1 * time.Second)
-		} else {
-			ok = true
-			assert.Comment("ping6 ok before stress")
-			break
-		}
-	}
-	if !ok {
-		t.Error("ping6 failing before stress test")
-	}
-
-	for _, to := range duration {
-		assert.Comment("stress for", to)
-		_, err := slice.ExecCmd(t, "CB-1",
-			"timeout", "-s", "KILL", to,
-			"hping3", "--icmp", "--flood", "-q", "-t", "1",
-			"2001:db8:0:3::4")
-		assert.Comment("verfy can still ping6 neighbor")
-		_, err = slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:1::2")
-		if err != nil {
-			assert.Comment("hping3 failed ", to)
-		}
-
-		assert.Nil(err)
-	}
 }

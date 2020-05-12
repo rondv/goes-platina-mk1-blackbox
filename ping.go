@@ -43,6 +43,7 @@ func pingTest(t *testing.T, netdevs netport.NetDevs) {
 		pingGateways(netdevs),
 		pingRemotes(netdevs),
 		pingFlood(netdevs),
+		pingRemotes(netdevs), // verify after flood ping
 	)
 }
 

@@ -401,6 +401,9 @@ func (frr frrV6OspfConfig) Test(t *testing.T) {
 				"vtysh", "-c", "conf t", "-c", "ipv6 forwarding")
 			assert.Nil(err)
 			_, err = frr.ExecCmd(t, r.Hostname,
+				"vtysh", "-c", "conf t", "-c", "interface "+intf, "-c", "ipv6 ospf6 network point-to-point")
+			assert.Nil(err)
+			_, err = frr.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t", "-c", "router ospf6", "-c", "interface "+intf+" area 0.0.0.0")
 			assert.Nil(err)
 			_, err = frr.ExecCmd(t, r.Hostname,

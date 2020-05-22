@@ -27,7 +27,7 @@ func AssertNoAdjacencies(t *testing.T) {
 	cmd := exec.Command(*Goes, "fe1", "switch", "adj")
 	out, _ := cmd.Output()
 	out_string := fmt.Sprintf("%s\n", out)
-	re := regexp.MustCompile("hard.*l3_unicast.*true.*")
+	re := regexp.MustCompile("hard.*l3_unicast.*true.*xeth")
 	rewrites := re.FindAllStringSubmatch(out_string, -1)
 	num := len(rewrites)
 	if num > 0 {

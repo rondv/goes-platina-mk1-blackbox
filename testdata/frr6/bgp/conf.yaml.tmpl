@@ -2,7 +2,7 @@ volume: "/testdata/frr6/bgp/"
 mapping: "/etc/frr"
 routers:
 - hostname: R1
-  image: "platinasystems/frrouting:7.2.1"
+  image: "platinasystems/frrouting:7.3.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port1"}}
@@ -12,7 +12,7 @@ routers:
     address:
       - 2001:db8:0:150::5/64
 - hostname: R2
-  image: "platinasystems/frrouting:7.2.1"
+  image: "platinasystems/frrouting:7.3.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net2port0"}}
@@ -22,7 +22,7 @@ routers:
     address:
       - 2001:db8:0:222::10/64
 - hostname: R3
-  image: "platinasystems/frrouting:7.2.1"
+  image: "platinasystems/frrouting:7.3.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net3port0"}}
@@ -32,7 +32,7 @@ routers:
     address:
       - 2001:db8:0:222::2/64
 - hostname: R4
-  image: "platinasystems/frrouting:7.2.1"
+  image: "platinasystems/frrouting:7.3.1"
   cmd: "/root/startup.sh"
   intfs:
   - name: {{index . "net3port1"}}

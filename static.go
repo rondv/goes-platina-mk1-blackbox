@@ -251,9 +251,6 @@ func (static staticBlackhole) Test(t *testing.T) {
 	assert.Comment("ping should get swallowed by blackhole")
 	assert.NonNil(static.PingCmd(t, "CA-1", "10.3.0.4"))
 
-	assert.Program(regexp.MustCompile("drop"),
-		*Goes, "fe1", "switch", "fib")
-
 	assert.Comment("Remove blackhole route")
 	static.ExecCmd(t, "RA-2", "ip", "route", "del", "blackhole",
 		"10.3.0.4/32")
@@ -287,13 +284,6 @@ func (static staticBlackhole) Test(t *testing.T) {
 	static.ExecCmd(t, "RA-1", "ip", "route", "del",
 		"blackhole", "192.168.0.0/25")
 	time.Sleep(1 * time.Second)
-
-	status := assert.ProgramNonFatal(regexp.MustCompile("drop"),
-		*Goes, "fe1", "switch", "fib")
-	if status == true {
-		assert.Fatal("drop found")
-		return
-	}
 
 	assert.Comment("Now ping should work again")
 	assert.Nil(static.PingCmd(t, "CA-1", "192.168.0.2"))

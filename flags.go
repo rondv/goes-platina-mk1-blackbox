@@ -11,7 +11,7 @@ import (
 
 const (
 	DefaultGoes   = "./goes-platina-mk1"
-	InstalledGoes = "/usr/bin/goes"
+	InstalledGoes = "/usr/sbin/goes"
 )
 
 var (

@@ -113,6 +113,8 @@ type nsifDelNets []netport.NetDev
 func (nsifDelNets) String() string { return "del-netns" }
 
 func (nsif nsifDelNets) Test(t *testing.T) {
+	max_retries := 10
+	failed := false
 	assert := test.Assert{t}
 	for _, nd := range []netport.NetDev(nsif) {
 		ns := nd.Netns
@@ -121,6 +123,28 @@ func (nsif nsifDelNets) Test(t *testing.T) {
 			assert.Program("ip", "netns", "del", ns)
 		}
 	}
+	n := 0
+	for _, nd := range []netport.NetDev(nsif) {
+		ifname := nd.Ifname
+		for ; n < max_retries; n++ {
+			if ok := assert.ProgramNonFatal("ip", "link", "set", ifname, "up"); ok {
+				break
+			}
+			failed = true
+			if n < max_retries-1 {
+				assert.Log("Retry")
+				failed = false
+				time.Sleep(1 * time.Second)
+			}
+		}
+		if failed {
+			break
+		}
+	}
+	if failed {
+		test.Pause.Prompt("Failed")
+	}
+	assert.False(failed)
 }
 
 type nsifNoNeighbor []netport.NetDev

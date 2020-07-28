@@ -78,6 +78,7 @@ func Test(t *testing.T) {
 		mayRun(t, "gobgp", gobgpNetTest)
 		mayRun(t, "bird", birdNetTest)
 		mayRun(t, "frr", frrNetTest)
+		mayRun(t, "svi", sviNetTest)
 		test.SkipIfDryRun(t)
 	})
 	mayRun(t, "vlan4", func(t *testing.T) {

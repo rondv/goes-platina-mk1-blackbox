@@ -93,15 +93,13 @@ func Test(t *testing.T) {
 	})
 	mayRun(t, "bridge", func(t *testing.T) {
 		mayRun(t, "ping", pingBridgeTest)
+		mayRun(t, "dhcp", dhcpSviTest)
 		test.SkipIfDryRun(t)
 	})
-	t.Log("Skipping nsif test")
-	if false {
-		mayRun(t, "nsif", func(t *testing.T) {
-			mayRun(t, "ip4", nsifNetTest)
-			mayRun(t, "ip6", nsifIp6NetTest)
-		})
-	}
+	mayRun(t, "nsif", func(t *testing.T) {
+		mayRun(t, "ip4", nsifNetTest)
+		mayRun(t, "ip6", nsifIp6NetTest)
+	})
 	mayRun(t, "net6", func(t *testing.T) {
 		mayRun(t, "ping", pingIp6NetTest)
 		mayRun(t, "static", staticV6NetTest)

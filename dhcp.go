@@ -28,6 +28,13 @@ func dhcpVlanTest(t *testing.T) {
 	dhcpTest(t, "testdata/net/dhcp/vlan/conf.yaml.tmpl")
 }
 
+func dhcpSviTest(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+	dhcpTest(t, "testdata/net/dhcp/svi/conf.yaml.tmpl")
+}
+
 func dhcpTest(t *testing.T, tmpl string) {
 	docket := &docker.Docket{Tmpl: tmpl}
 	docket.Test(t,
@@ -105,10 +112,14 @@ func (dhcp dhcpClient) Test(t *testing.T) {
 
 	r, err := docker.FindHost(dhcp.Config, "R1")
 	intf := r.Intfs[0]
+	intfName := intf.Name
+	if intf.Vlan != "" {
+		intfName = intfName + "." + intf.Vlan
+	}
 
 	// remove existing IP address
 	_, err = dhcp.ExecCmd(t, "R1",
-		"ip", "address", "delete", "192.168.120.5", "dev", intf.Name)
+		"ip", "address", "delete", "192.168.120.5/24", "dev", intfName)
 	assert.Nil(err)
 
 	assert.Comment("Verify ping fails")
@@ -116,7 +127,7 @@ func (dhcp dhcpClient) Test(t *testing.T) {
 	assert.NonNil(err)
 
 	assert.Comment("Request dhcp address")
-	out, err := dhcp.ExecCmd(t, "R1", "dhclient", "-4", "-v", intf.Name)
+	out, err := dhcp.ExecCmd(t, "R1", "dhclient", "-4", "-v", intfName)
 	assert.Nil(err)
 	assert.Match(out, "bound to")
 }
@@ -146,21 +157,29 @@ func (dhcp dhcpVlanTag) Test(t *testing.T) {
 
 	r1, err := docker.FindHost(dhcp.Config, "R1")
 	r1Intf := r1.Intfs[0]
+	intfName1 := r1Intf.Name
+	if r1Intf.Vlan != "" {
+		intfName1 = intfName1 + "." + r1Intf.Vlan
+	}
 
 	// remove existing IP address
 	_, err = dhcp.ExecCmd(t, "R1",
-		"ip", "address", "flush", "dev", r1Intf.Name)
+		"ip", "address", "flush", "dev", intfName1)
 	assert.Nil(err)
 
 	r2, err := docker.FindHost(dhcp.Config, "R2")
 	r2Intf := r2.Intfs[0]
+	intfName2 := r2Intf.Name
+	if r2Intf.Vlan != "" {
+		intfName2 = intfName2 + "." + r2Intf.Vlan
+	}
 
 	done := make(chan bool, 1)
 
 	go func(done chan bool) {
 		out, err := dhcp.ExecCmd(t, "R2",
 			"timeout", "10",
-			"tcpdump", "-c1", "-nvvvei", r2Intf.Name, "port", "67")
+			"tcpdump", "-c1", "-nvvvei", intfName2, "port", "67")
 		assert.Nil(err)
 		match, err := regexp.MatchString("vlan 0", out)
 		assert.Nil(err)
@@ -171,7 +190,8 @@ func (dhcp dhcpVlanTag) Test(t *testing.T) {
 	}(done)
 
 	time.Sleep(1 * time.Second)
-	_, err = dhcp.ExecCmd(t, "R1", "dhclient", "-4", "-v", r1Intf.Name)
+	out, err := dhcp.ExecCmd(t, "R1", "dhclient", "-4", "-v", intfName1)
 	assert.Nil(err)
+	assert.Match(out, "bound to")
 	<-done
 }

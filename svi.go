@@ -177,7 +177,20 @@ func (svi sviOspfInterConnectivity) Test(t *testing.T) {
 		hostname string
 		target   string
 	}{
-		{"R1", "1.0.0.0/24"},
+		{"R1", "1.0.0.2"},
+		{"R1", "1.0.0.3"},
+		{"R1", "2.0.0.2"},
+		{"R1", "3.0.0.2"},
+		{"R1", "3.0.0.3"},
+		{"R2", "1.0.0.1"},
+		{"R2", "1.0.0.2"},
+		{"R2", "1.0.0.3"},
+		{"R2", "2.0.0.1"},
+		{"R2", "3.0.0.3"},
+		{"H1", "192.168.0.2"},
+		{"H3", "192.168.1.1"},
+		{"H3", "192.168.0.2"},
+		//{"H3", "192.168.0.1"},
 	} {
 		assert.Nil(svi.PingCmd(t, x.hostname, x.target))
 		assert.Program(*Goes, "fe1", "switch", "fib")

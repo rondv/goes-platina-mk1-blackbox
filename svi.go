@@ -22,11 +22,15 @@ func sviOspfTest(t *testing.T, tmpl string) {
 		sviCarrier{docket},
 		sviConnectivity{docket},
 		sviOspfDaemons{docket},
+		sviOspfConfig{docket},
 		sviOspfNeighbors{docket},
 		sviOspfRoutes{docket},
 		sviOspfInterConnectivity{docket},
 		sviOspfFlap{docket},
 		sviConnectivity{docket},
+		sviOspfNeighbors{docket},
+		sviOspfRoutes{docket},
+		sviOspfInterConnectivity{docket},
 		sviOspfAdminDown{docket},
 	)
 }
@@ -38,14 +42,14 @@ func (sviConnectivity) String() string { return "connectivity" }
 func (svi sviConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("stop")
-
 	for _, x := range []struct {
 		hostname string
 		target   string
 	}{
 		{"H1", "1.0.0.1"},
+		{"H1", "1.0.0.3"},
 		{"H2", "1.0.0.1"},
+		{"H2", "1.0.0.2"},
 		{"R1", "1.0.0.2"},
 		{"R1", "1.0.0.3"},
 		{"R1", "2.0.0.2"},
@@ -96,6 +100,43 @@ func (svi sviOspfDaemons) Test(t *testing.T) {
 	}
 }
 
+type sviOspfConfig struct{ *docker.Docket }
+
+func (sviOspfConfig) String() string { return "config" }
+
+func (svi sviOspfConfig) Test(t *testing.T) {
+	assert := test.Assert{t}
+	assert.Comment("configuring OSPF v2")
+
+	for _, r := range svi.Routers {
+		for _, i := range r.Intfs {
+			var intf string
+			if i.Vlan != "" {
+				intf = i.Name + "." + i.Vlan
+			} else {
+				intf = i.Name
+			}
+			_, err := svi.ExecCmd(t, r.Hostname,
+				"vtysh", "-c", "conf t", "-c", "ip forwarding")
+			assert.Nil(err)
+			if i.Upper != "" {
+				continue
+			}
+			if r.Hostname != "H1" && r.Hostname != "H2" && intf != "br0" && intf != "dummy0" {
+				_, err = svi.ExecCmd(t, r.Hostname,
+					"vtysh", "-c", "conf t", "-c", "interface "+intf, "-c", "ip ospf network point-to-point")
+				assert.Nil(err)
+			}
+			_, err = svi.ExecCmd(t, r.Hostname,
+				"vtysh", "-c", "conf t", "-c", "interface "+intf, "-c", "ip ospf area 0.0.0.0")
+			assert.Nil(err)
+			_, err = svi.ExecCmd(t, r.Hostname,
+				"vtysh", "-c", "conf t", "-c", "router ospf", "-c", "redistribute connected")
+			assert.Nil(err)
+		}
+	}
+}
+
 type sviOspfNeighbors struct{ *docker.Docket }
 
 func (sviOspfNeighbors) String() string { return "neighbors" }
@@ -105,15 +146,22 @@ func (svi sviOspfNeighbors) Test(t *testing.T) {
 
 	timeout := 120
 
+	test.Pause.Prompt("stop")
+
 	for _, x := range []struct {
 		hostname string
 		peer     string
 	}{
-		{"R2", "2.0.0.1"},
-		{"R2", "3.0.0.3"},
-		{"R1", "2.0.0.2"},
+		{"H1", "0.0.0.1"},
+		{"H1", "1.0.0.2"},
+		{"H2", "0.0.0.1"},
+		{"H2", "1.0.0.1"},
 		{"R1", "1.0.0.2"},
 		{"R1", "1.0.0.3"},
+		{"R1", "2.0.0.2"},
+		{"R2", "2.0.0.1"},
+		{"R2", "3.0.0.3"},
+		{"H3", "0.0.0.2"},
 	} {
 		found := false
 		for i := timeout; i > 0; i-- {
@@ -144,8 +192,42 @@ func (svi sviOspfRoutes) Test(t *testing.T) {
 		hostname string
 		route    string
 	}{
+		{"H1", "2.0.0.0/24"},
+		{"H1", "3.0.0.0/24"},
+		{"H2", "2.0.0.0/24"},
+		{"H2", "3.0.0.0/24"},
+		{"R1", "2.0.0.0/24"},
+		{"R1", "3.0.0.0/24"},
 		{"R2", "1.0.0.0/24"},
 		{"R2", "2.0.0.0/24"},
+		{"H3", "1.0.0.0/24"},
+		{"H3", "2.0.0.0/24"},
+
+		// loopbacks
+		{"H1", "192.168.0.2"},
+		{"H1", "192.168.0.3"},
+		{"H1", "192.168.1.1"},
+		{"H1", "192.168.1.2"},
+
+		{"H2", "192.168.0.1"},
+		{"H2", "192.168.0.3"},
+		{"H2", "192.168.1.1"},
+		{"H2", "192.168.1.2"},
+
+		{"R1", "192.168.0.1"},
+		{"R1", "192.168.0.2"},
+		{"R1", "192.168.0.3"},
+		{"R1", "192.168.1.2"},
+
+		{"R2", "192.168.0.1"},
+		{"R2", "192.168.0.2"},
+		{"R2", "192.168.0.3"},
+		{"R2", "192.168.1.1"},
+
+		{"H3", "192.168.0.1"},
+		{"H3", "192.168.0.2"},
+		{"H3", "192.168.1.1"},
+		{"H3", "192.168.1.2"},
 	} {
 		found := false
 		timeout := 60
@@ -177,6 +259,8 @@ func (svi sviOspfInterConnectivity) Test(t *testing.T) {
 		hostname string
 		target   string
 	}{
+		{"H1", "3.0.0.3"},
+		{"H2", "3.0.0.3"},
 		{"R1", "1.0.0.2"},
 		{"R1", "1.0.0.3"},
 		{"R1", "2.0.0.2"},
@@ -188,9 +272,12 @@ func (svi sviOspfInterConnectivity) Test(t *testing.T) {
 		{"R2", "2.0.0.1"},
 		{"R2", "3.0.0.3"},
 		{"H1", "192.168.0.2"},
+		{"H1", "192.168.0.3"},
+		{"H1", "192.168.0.1"},
+		{"H1", "192.168.0.3"},
 		{"H3", "192.168.1.1"},
 		{"H3", "192.168.0.2"},
-		//{"H3", "192.168.0.1"},
+		{"H3", "192.168.0.1"},
 	} {
 		assert.Nil(svi.PingCmd(t, x.hostname, x.target))
 		assert.Program(*Goes, "fe1", "switch", "fib")

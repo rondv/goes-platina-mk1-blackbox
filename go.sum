@@ -39,6 +39,8 @@ github.com/platinasystems/test v1.8.4 h1:4M6wQQeHYVBnrn+UEB1VcZvZ4GDncQScb+reH7X
 github.com/platinasystems/test v1.8.4/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 github.com/platinasystems/test v1.8.5 h1:ic2HPCv1pYr0trY6U+LMxFbgdh4Pw052JTcFwTWzom0=
 github.com/platinasystems/test v1.8.5/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
+github.com/platinasystems/test v1.8.6 h1:HdjebjrTVJfa6+EGdwxKqEoOXD/KOtumqEtEkB2uIXM=
+github.com/platinasystems/test v1.8.6/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

@@ -51,6 +51,7 @@ func mpTest(t *testing.T, netdevs netport.NetDevs) {
 	}
 	test.Tests{
 		staticRoute(netdevs),
+		pingLocal(netdevs),
 		pingRemotesP(netdevs),
 		removeLastRoute(netdevs),
 		pingRemotesP(netdevs),
@@ -72,6 +73,27 @@ func (mp staticRoute) Test(t *testing.T) {
 				r.GW)
 		}
 	}
+}
+
+type pingLocal []netport.NetDev
+
+func (pingLocal) String() string { return "pingLocal" }
+
+func (mp pingLocal) Test(t *testing.T) {
+	assert := test.Assert{t}
+
+	for _, x := range []struct {
+		host     string
+		neighbor string
+	}{
+		{"r", "fc01:1:2:3:4:5:6:1"},
+		{"r", "fc02:1:2:3:4:5:6:1"},
+		{"r", "fc03:1:2:3:4:5:6:1"},
+		{"r", "fc04:1:2:3:4:5:6:1"},
+	} {
+		assert.Ping(x.host, x.neighbor)
+	}
+
 }
 
 type pingRemotesP []netport.NetDev

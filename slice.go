@@ -159,12 +159,7 @@ func (slice sliceIsolation) Test(t *testing.T) {
 	assert.Nil(err)
 
 	for _, i := range r.Intfs {
-		var intf string
-		if i.Vlan != "" {
-			intf = i.Name + "." + i.Vlan
-		} else {
-			intf = i.Name
-		}
+		intf := docker.IntfVlanName(i.Name, i.Vlan)
 		_, err := slice.ExecCmd(t, r.Hostname,
 			"ip", "link", "set", "down", intf)
 		assert.Nil(err)
@@ -186,12 +181,7 @@ func (slice sliceIsolation) Test(t *testing.T) {
 
 	// bring RB-2 interfaces back up
 	for _, i := range r.Intfs {
-		var intf string
-		if i.Vlan != "" {
-			intf = i.Name + "." + i.Vlan
-		} else {
-			intf = i.Name
-		}
+		intf := docker.IntfVlanName(i.Name, i.Vlan)
 		_, err := slice.ExecCmd(t, r.Hostname,
 			"ip", "link", "set", "up", intf)
 		assert.Nil(err)
@@ -202,12 +192,7 @@ func (slice sliceIsolation) Test(t *testing.T) {
 	assert.Nil(err)
 
 	for _, i := range r.Intfs {
-		var intf string
-		if i.Vlan != "" {
-			intf = i.Name + "." + i.Vlan
-		} else {
-			intf = i.Name
-		}
+		intf := docker.IntfVlanName(i.Name, i.Vlan)
 		_, err := slice.ExecCmd(t, r.Hostname,
 			"ip", "link", "set", "down", intf)
 		assert.Nil(err)
@@ -241,12 +226,7 @@ func (slice sliceIsolation) Test(t *testing.T) {
 
 	// bring RA-1 interfaces back up
 	for _, i := range r.Intfs {
-		var intf string
-		if i.Vlan != "" {
-			intf = i.Name + "." + i.Vlan
-		} else {
-			intf = i.Name
-		}
+		intf := docker.IntfVlanName(i.Name, i.Vlan)
 		_, err := slice.ExecCmd(t, r.Hostname,
 			"ip", "link", "set", "up", intf)
 		assert.Nil(err)

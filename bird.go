@@ -224,12 +224,7 @@ func (bird birdBgpFlap) Test(t *testing.T) {
 
 	for _, r := range bird.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := bird.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -253,12 +248,7 @@ func (bird birdBgpAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range bird.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := bird.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -428,12 +418,7 @@ func (bird birdOspfFlap) Test(t *testing.T) {
 
 	for _, r := range bird.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := bird.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -457,12 +442,7 @@ func (bird birdOspfAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range bird.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := bird.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)

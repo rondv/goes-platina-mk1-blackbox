@@ -274,12 +274,7 @@ func (gobgp gobgpFlap) Test(t *testing.T) {
 
 	for _, r := range gobgp.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := gobgp.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -303,12 +298,7 @@ func (gobgp gobgpAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range gobgp.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := gobgp.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)

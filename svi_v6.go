@@ -69,12 +69,7 @@ func (svi6 svi6Carrier) Test(t *testing.T) {
 
 	for _, r := range svi6.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			assert.Comment("check carrier for", r.Hostname,
 				"on", intf)
 			assert.Nil(test.Carrier(r.Hostname, intf))
@@ -108,18 +103,10 @@ func (svi6 svi6OspfConfig) Test(t *testing.T) {
 
 	for _, r := range svi6.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi6.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t", "-c", "ipv6 forwarding")
 			assert.Nil(err)
-			if i.Upper != "" {
-				continue
-			}
 			if r.Hostname != "H1" && r.Hostname != "H2" && intf != "br0" && intf != "dummy0" {
 				_, err = svi6.ExecCmd(t, r.Hostname,
 					"vtysh", "-c", "conf t", "-c", "interface "+intf, "-c", "ipv6 ospf6 network point-to-point")
@@ -329,12 +316,7 @@ func (svi6 svi6OspfFlap) Test(t *testing.T) {
 
 	for _, r := range svi6.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi6.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -358,12 +340,7 @@ func (svi6 svi6OspfAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range svi6.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi6.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)

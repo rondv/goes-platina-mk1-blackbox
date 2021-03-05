@@ -41,13 +41,14 @@ func TestMain(m *testing.M) {
 	if os.Geteuid() != 0 {
 		panic("you aren't root")
 	}
+	goesV2 := false
 	if b, err := ioutil.ReadFile("/proc/net/unix"); err == nil {
-		for _, atsock := range []string{
-			"@xeth",
-		} {
-			if bytes.Index(b, []byte(atsock)) < 0 {
-				panic(fmt.Errorf("no %s, are modules loaded?",
-					atsock))
+		if bytes.Index(b, []byte("@xeth")) < 0 {
+			goesV2 = true
+			checkV2 := "@platina-mk1"
+			if bytes.Index(b, []byte(checkV2)) < 0 {
+				panic(fmt.Errorf("no %v, are modules loaded",
+					checkV2))
 			}
 		}
 		for _, atsock := range []string{
@@ -61,6 +62,14 @@ func TestMain(m *testing.M) {
 					atsock))
 			}
 		}
+		if goesV2 {
+			checkV2 := "@goes-platina-mk1-daemons"
+			if bytes.Index(b, []byte(checkV2)) < 0 {
+				panic(fmt.Errorf("no %s, is goes running?",
+					checkV2))
+			}
+		}
+
 	}
 	netport.Init(*Goes)
 	ethtool.Init()

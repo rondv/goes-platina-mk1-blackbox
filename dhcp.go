@@ -112,11 +112,7 @@ func (dhcp dhcpClient) Test(t *testing.T) {
 
 	r, err := docker.FindHost(dhcp.Config, "R1")
 	intf := r.Intfs[0]
-	intfName := intf.Name
-	if intf.Vlan != "" {
-		intfName = intfName + "." + intf.Vlan
-	}
-
+	intfName := docker.IntfVlanName(intf.Name, intf.Vlan)
 	// remove existing IP address
 	_, err = dhcp.ExecCmd(t, "R1",
 		"ip", "address", "delete", "192.168.120.5/24", "dev", intfName)
@@ -157,11 +153,7 @@ func (dhcp dhcpVlanTag) Test(t *testing.T) {
 
 	r1, err := docker.FindHost(dhcp.Config, "R1")
 	r1Intf := r1.Intfs[0]
-	intfName1 := r1Intf.Name
-	if r1Intf.Vlan != "" {
-		intfName1 = intfName1 + "." + r1Intf.Vlan
-	}
-
+	intfName1 := docker.IntfVlanName(r1Intf.Name, r1Intf.Vlan)
 	// remove existing IP address
 	_, err = dhcp.ExecCmd(t, "R1",
 		"ip", "address", "flush", "dev", intfName1)
@@ -169,10 +161,7 @@ func (dhcp dhcpVlanTag) Test(t *testing.T) {
 
 	r2, err := docker.FindHost(dhcp.Config, "R2")
 	r2Intf := r2.Intfs[0]
-	intfName2 := r2Intf.Name
-	if r2Intf.Vlan != "" {
-		intfName2 = intfName2 + "." + r2Intf.Vlan
-	}
+	intfName2 := docker.IntfVlanName(r2Intf.Name, r2Intf.Vlan)
 
 	done := make(chan bool, 1)
 

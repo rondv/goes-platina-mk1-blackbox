@@ -11,10 +11,11 @@ routers:
   image: "platinasystems/debian-dhcp:0.2"
   cmd: "/root/startup.sh"
   intfs:
-  - name: br0
-    isbridge: true  
+  - kind: bridge
+    name: br0
     address:
       - 192.168.120.10/24
-  - name: {{index . "net0port1"}}
-    upper: br0
-    vlan: 10
+  lowers:
+    br0:
+    - name: {{index . "net0port1"}}
+      vlan: 10

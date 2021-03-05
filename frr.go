@@ -249,12 +249,7 @@ func (frr frrBgpFlap) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -278,12 +273,7 @@ func (frr frrBgpAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -302,12 +292,7 @@ func (frr frrOspfCarrier) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			assert.Comment("check carrier for", r.Hostname,
 				"on", intf)
 			assert.Nil(test.Carrier(r.Hostname, intf))
@@ -472,12 +457,7 @@ func (frr frrOspfFlap) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -501,12 +481,7 @@ func (frr frrOspfAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -566,12 +541,7 @@ func (frr frrIsisAddIntfConf) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t",
 				"-c", "interface "+intf,
@@ -699,12 +669,7 @@ func (frr frrIsisFlap) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -728,12 +693,7 @@ func (frr frrIsisAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)

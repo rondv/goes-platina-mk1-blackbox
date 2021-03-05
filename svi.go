@@ -80,12 +80,7 @@ func (svi sviCarrier) Test(t *testing.T) {
 
 	for _, r := range svi.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			assert.Comment("check carrier for", r.Hostname,
 				"on", intf)
 			assert.Nil(test.Carrier(r.Hostname, intf))
@@ -119,18 +114,10 @@ func (svi sviOspfConfig) Test(t *testing.T) {
 
 	for _, r := range svi.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t", "-c", "ip forwarding")
 			assert.Nil(err)
-			if i.Upper != "" {
-				continue
-			}
 			if r.Hostname != "H1" && r.Hostname != "H2" && intf != "br0" && intf != "dummy0" {
 				_, err = svi.ExecCmd(t, r.Hostname,
 					"vtysh", "-c", "conf t", "-c", "interface "+intf, "-c", "ip ospf network point-to-point")
@@ -306,12 +293,7 @@ func (svi sviOspfFlap) Test(t *testing.T) {
 
 	for _, r := range svi.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -335,12 +317,7 @@ func (svi sviOspfAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range svi.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := svi.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -416,12 +393,7 @@ func (frr sviIsisAddIntfConf) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"vtysh", "-c", "conf t",
 				"-c", "interface "+intf,
@@ -592,12 +564,7 @@ func (frr sviIsisFlap) Test(t *testing.T) {
 
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)
@@ -621,12 +588,7 @@ func (frr sviIsisAdminDown) Test(t *testing.T) {
 	num_intf := 0
 	for _, r := range frr.Routers {
 		for _, i := range r.Intfs {
-			var intf string
-			if i.Vlan != "" {
-				intf = i.Name + "." + i.Vlan
-			} else {
-				intf = i.Name
-			}
+			intf := docker.IntfVlanName(i.Name, i.Vlan)
 			_, err := frr.ExecCmd(t, r.Hostname,
 				"ip", "link", "set", "down", intf)
 			assert.Nil(err)

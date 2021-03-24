@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -82,18 +83,22 @@ func (pingLocal) String() string { return "pingLocal" }
 func (mp pingLocal) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	for _, x := range []struct {
-		host     string
-		neighbor string
-	}{
-		{"r", "fc01:1:2:3:4:5:6:1"},
-		{"r", "fc02:1:2:3:4:5:6:1"},
-		{"r", "fc03:1:2:3:4:5:6:1"},
-		{"r", "fc04:1:2:3:4:5:6:1"},
-	} {
-		assert.Ping(x.host, x.neighbor)
-	}
+	nd := []netport.NetDev(mp)[0]
+	addr := nd.Ifa
+	if strings.Contains(addr, ":") {
+		for _, x := range []struct {
+			host     string
+			neighbor string
+		}{
+			{"r", "fc01:1:2:3:4:5:6:1"},
+			{"r", "fc02:1:2:3:4:5:6:1"},
+			{"r", "fc03:1:2:3:4:5:6:1"},
+			{"r", "fc04:1:2:3:4:5:6:1"},
+		} {
+			assert.Ping(x.host, x.neighbor)
+		}
 
+	}
 }
 
 type pingRemotesP []netport.NetDev

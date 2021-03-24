@@ -170,7 +170,11 @@ func (slice sliceIsolation) Test(t *testing.T) {
 
 	assert.Comment("Verify that slice B is broken")
 	_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.3.0.4")
-	assert.NonNil(err)
+	if err == nil {
+		time.Sleep(1 * time.Second)
+		_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.3.0.4")
+		assert.NonNil(err)
+	}
 
 	assert.Comment("Verify that slice A is not affected")
 	_, err = slice.ExecCmd(t, "CA-1", "ping", "-c1", "10.3.0.4")
@@ -203,7 +207,11 @@ func (slice sliceIsolation) Test(t *testing.T) {
 
 	assert.Comment("Verify that slice A is broken")
 	_, err = slice.ExecCmd(t, "CA-1", "ping", "-c1", "10.3.0.4")
-	assert.NonNil(err)
+	if err == nil {
+		time.Sleep(1 * time.Second)
+		_, err = slice.ExecCmd(t, "CA-1", "ping", "-c1", "10.3.0.4")
+		assert.NonNil(err)
+	}
 
 	ok := false
 	assert.Comment("Verify that slice B is not affected")

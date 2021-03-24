@@ -164,8 +164,6 @@ func (sliceV6Routes) String() string { return "routes" }
 func (slice sliceV6Routes) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Stop")
-
 	for _, x := range []struct {
 		hostname string
 		route    string
@@ -241,7 +239,11 @@ func (slice sliceV6Isolation) Test(t *testing.T) {
 
 	assert.Comment("Verify that slice B is broken")
 	_, err = slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:3::4")
-	assert.NonNil(err)
+	if err == nil {
+		time.Sleep(1 * time.Second)
+		_, err = slice.ExecCmd(t, "CB-1", "ping6", "-c1", "2001:db8:0:3::4")
+		assert.NonNil(err)
+	}
 
 	assert.Comment("Verify that slice A is not affected")
 	_, err = slice.ExecCmd(t, "CA-1", "ping6", "-c1", "2001:db8:0:3::4")
@@ -274,6 +276,11 @@ func (slice sliceV6Isolation) Test(t *testing.T) {
 
 	assert.Comment("Verify that slice A is broken")
 	_, err = slice.ExecCmd(t, "CA-1", "ping6", "-c1", "2001:db8:0:3::4")
+	if err == nil {
+		time.Sleep(1 * time.Second)
+		_, err = slice.ExecCmd(t, "CA-1", "ping6", "-c1", "2001:db8:0:3::4")
+		assert.NonNil(err)
+	}
 	assert.NonNil(err)
 
 	ok := false

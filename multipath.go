@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
@@ -34,8 +33,10 @@ func mpTest(t *testing.T, netdevs netport.NetDevs) {
 		_, err := os.Stat(filepath.Join("/var/run/netns", ns))
 		if err != nil {
 			assert.Program("ip", "netns", "add", ns)
+			assert.Program("ip", "netns", "exec", ns, "sysctl", "-w", "net/ipv4/conf/all/rp_filter=0")
+			assert.Program("ip", "netns", "exec", ns, "sysctl", "-w", "net/ipv6/conf/all/forwarding=1")
 		}
-		assert.Program("ip", "netns", "exec", ns, "sysctl", "-w", "net/ipv4/conf/all/rp_filter=0")
+
 		ifname := netport.PortByNetPort[nd.NetPort]
 		nd.Ifname = ifname
 		assert.Program("ip", "link", "set", ifname, "up",
@@ -52,7 +53,6 @@ func mpTest(t *testing.T, netdevs netport.NetDevs) {
 	}
 	test.Tests{
 		staticRoute(netdevs),
-		pingLocal(netdevs),
 		pingRemotesP(netdevs),
 		removeLastRoute(netdevs),
 		pingRemotesP(netdevs),
@@ -73,31 +73,6 @@ func (mp staticRoute) Test(t *testing.T) {
 				"ip", "route", "append", r.Prefix, "via",
 				r.GW)
 		}
-	}
-}
-
-type pingLocal []netport.NetDev
-
-func (pingLocal) String() string { return "pingLocal" }
-
-func (mp pingLocal) Test(t *testing.T) {
-	assert := test.Assert{t}
-
-	nd := []netport.NetDev(mp)[0]
-	addr := nd.Ifa
-	if strings.Contains(addr, ":") {
-		for _, x := range []struct {
-			host     string
-			neighbor string
-		}{
-			{"r", "fc01:1:2:3:4:5:6:1"},
-			{"r", "fc02:1:2:3:4:5:6:1"},
-			{"r", "fc03:1:2:3:4:5:6:1"},
-			{"r", "fc04:1:2:3:4:5:6:1"},
-		} {
-			assert.Ping(x.host, x.neighbor)
-		}
-
 	}
 }
 

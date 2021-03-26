@@ -45,8 +45,6 @@ func (routesConnectivity) String() string { return "connectivity" }
 func (routes routesConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("stop")
-
 	for _, x := range []struct {
 		hostname string
 		target   string

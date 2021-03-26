@@ -77,7 +77,6 @@ func (dhcpServer) String() string { return "server" }
 func (dhcp dhcpServer) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Stop")
 	assert.Comment("Checking dhcp server on", "R2")
 	time.Sleep(1 * time.Second)
 	out, err := dhcp.ExecCmd(t, "R2", "ps", "ax")

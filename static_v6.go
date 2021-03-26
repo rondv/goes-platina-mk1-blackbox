@@ -42,8 +42,6 @@ func (staticV6Connectivity) String() string { return "connectivity" }
 func (staticV6 staticV6Connectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("conditional pause")
-
 	out, err := staticV6.ExecCmd(t, "RA-1", "vtysh", "-c",
 		"conf t", "-c", "ipv6 route 2001:db8:0:0::1/128 2001:db8:0:1::1")
 	assert.Comment("out = ", out, " err = ", err)
@@ -120,8 +118,6 @@ func (staticV6InterConnectivity) String() string { return "inter-connectivity" }
 
 func (staticV6 staticV6InterConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
-
-	test.Pause.Prompt("conditional pause")
 
 	for _, x := range []struct {
 		hostname string

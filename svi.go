@@ -142,8 +142,6 @@ func (svi sviOspfNeighbors) Test(t *testing.T) {
 
 	timeout := 120
 
-	test.Pause.Prompt("stop")
-
 	for _, x := range []struct {
 		hostname string
 		peer     string
@@ -409,8 +407,6 @@ func (sviIsisNeighbors) String() string { return "neighbors" }
 
 func (svi sviIsisNeighbors) Test(t *testing.T) {
 	assert := test.Assert{t}
-
-	test.Pause.Prompt("stop")
 
 	for _, x := range []struct {
 		hostname string

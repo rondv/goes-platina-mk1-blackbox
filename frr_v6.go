@@ -96,7 +96,6 @@ func (frrV6BgpConnectivity) String() string { return "connectivity" }
 func (frr frrV6BgpConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Stop")
 	for _, x := range []struct {
 		host   string
 		target string
@@ -440,8 +439,6 @@ func (frrV6OspfRoutes) String() string { return "routes" }
 func (frr frrV6OspfRoutes) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Check IPv6 OSPF routes")
-
 	for _, x := range []struct {
 		hostname string
 		route    string
@@ -553,8 +550,6 @@ func (frrV6IsisConnectivity) String() string { return "connectivity" }
 func (frr frrV6IsisConnectivity) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Stop")
-
 	for _, x := range []struct {
 		host   string
 		target string
@@ -614,8 +609,6 @@ func (frrV6IsisNeighbors) String() string { return "neighbors" }
 
 func (frr frrV6IsisNeighbors) Test(t *testing.T) {
 	assert := test.Assert{t}
-
-	test.Pause.Prompt("stop")
 
 	for _, x := range []struct {
 		hostname string

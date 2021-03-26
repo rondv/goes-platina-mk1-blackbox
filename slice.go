@@ -277,9 +277,14 @@ func getFanRpm() (rpm string, err error) {
 		lladdr6 string
 	)
 
+	if *test.NoBmc {
+		return
+	}
+
 	lladdr6, _ = getIpv6Ll()
 
-	out, _ = exec.Command("redis-cli", "--raw", "-h", lladdr6, "hget", "platina-mk1-bmc",
+	out, err = exec.Command("timeout", "1",
+		"redis-cli", "--raw", "-h", lladdr6, "hget", "platina-mk1-bmc",
 		"fan_tray.1.1.speed.units.rpm").Output()
 	rpm = string(out)
 	rpm = strings.TrimSuffix(rpm, "\n")
@@ -332,7 +337,8 @@ func (slice sliceStress) Test(t *testing.T) {
 		_, err := slice.ExecCmd(t, "CB-1",
 			"timeout", "-s", "KILL", to,
 			"hping3", "--icmp", "--flood", "-q", "10.3.0.4")
-		assert.Comment("verfy can still ping neighbor")
+
+		assert.Comment("verify can still ping neighbor")
 		_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.1.0.2")
 		if err != nil {
 			assert.Comment("hping3 failed ", to)
@@ -390,7 +396,7 @@ func (slice sliceStressPci) Test(t *testing.T) {
 			"timeout", "-s", "KILL", to,
 			"hping3", "--icmp", "--flood", "-q", "-t", "1",
 			"10.3.0.4")
-		assert.Comment("verfy can still ping neighbor")
+		assert.Comment("verify can still ping neighbor")
 		_, err = slice.ExecCmd(t, "CB-1", "ping", "-c1", "10.1.0.2")
 		if err != nil {
 			assert.Comment("hping3 failed ", to)

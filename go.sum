@@ -77,6 +77,8 @@ github.com/platinasystems/test v1.8.7-0.20210320002549-ed8ca739d5f2 h1:yFvju7n2m
 github.com/platinasystems/test v1.8.7-0.20210320002549-ed8ca739d5f2/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 github.com/platinasystems/test v1.8.7-0.20210325212532-db4084c27860 h1:eTyvuNutOyv8DsGnuHS8HD0h/Vl9FLH7InFYnbx6fhY=
 github.com/platinasystems/test v1.8.7-0.20210325212532-db4084c27860/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
+github.com/platinasystems/test v1.8.7-0.20210327001537-1d31ddce9211 h1:8ddhJOk2EdkCMpjymSoM71ZUbFP5XjuBE3DHu3qW8x0=
+github.com/platinasystems/test v1.8.7-0.20210327001537-1d31ddce9211/go.mod h1:Ar6YoXSUooZXkC4VEyzQAMtJgbYfGONg+OSBgo/DCj0=
 github.com/platinasystems/tftp v1.0.0 h1:wUv+nFUwntLddYGa3Y5Zr3TUQ4rtQXGebG0ZOutVyIw=
 github.com/platinasystems/tftp v1.0.0/go.mod h1:RUhAd8ADNPAQmoiSbjo4aDFAOBjz7kC1FkDAmuEd9J0=
 github.com/platinasystems/ubi v0.0.2/go.mod h1:owxkur4yGan4QJryDtjAWr4fj/BDCXQ/x9KqID9T1y0=

@@ -169,8 +169,6 @@ func (svi6OspfRoutes) String() string { return "routes" }
 func (svi6 svi6OspfRoutes) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("stop")
-
 	for _, x := range []struct {
 		hostname string
 		route    string

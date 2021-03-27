@@ -164,8 +164,6 @@ func (sliceV6Routes) String() string { return "routes" }
 func (slice sliceV6Routes) Test(t *testing.T) {
 	assert := test.Assert{t}
 
-	test.Pause.Prompt("Stop")
-
 	for _, x := range []struct {
 		hostname string
 		route    string

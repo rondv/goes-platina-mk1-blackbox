@@ -11,7 +11,7 @@ routers:
   image: "platinasystems/debian-dhcp:0.2"
   cmd: "/root/startup.sh"
   intfs:
-  - kind: bridge
+  - kind: xeth-bridge
     name: br0
     address:
       - 192.168.120.10/24
